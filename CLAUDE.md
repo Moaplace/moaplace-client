@@ -39,7 +39,7 @@ src/
 
 **데이터 플로우:** 방 생성(UUID) → URL 공유 → 마커 등록 → Polling(3초) → 중심점/TSP 계산 → 결과 표시
 
-> 상세: [docs/plans/01_ARCHITECTURE.md](docs/plans/01_ARCHITECTURE.md)
+> 상세: [docs/01_ARCHITECTURE.md](docs/01_ARCHITECTURE.md)
 
 ---
 
@@ -65,7 +65,7 @@ CTA: bg-primary hover:bg-primary-600 active:bg-primary-700
 
 ## Common Widgets
 
-**새 위젯 만들기 전에 반드시 [docs/plans/05_WIDGETS_GUIDE.md](docs/plans/05_WIDGETS_GUIDE.md) 확인!**
+**새 위젯 만들기 전에 반드시 [docs/05_WIDGETS_GUIDE.md](docs/05_WIDGETS_GUIDE.md) 확인!**
 
 핵심: `Button`(4 variant), `Input`, `Toast`(4 variant), `Modal`, `BottomSheet`, `PWAInstallBanner`
 
@@ -92,7 +92,7 @@ Toss UI/UX 원칙 적용 — 터치 44px+, 1Thing/1Page, 스켈레톤 UI, 비격
 - `index.ts` 배럴 export, 전체 스토어 구독
 - 강요형 UX 문구 ("반드시 ~해야 합니다")
 
-> 상세: [docs/plans/03_CODE_CONVENTIONS.md](docs/plans/03_CODE_CONVENTIONS.md)
+> 상세: [docs/03_CODE_CONVENTIONS.md](docs/03_CODE_CONVENTIONS.md)
 
 ---
 
@@ -108,7 +108,7 @@ Toss UI/UX 원칙 적용 — 터치 44px+, 1Thing/1Page, 스켈레톤 UI, 비격
 
 **import 순서:** React → 외부 라이브러리 → 내부 모듈 → 타입 → 스타일 (그룹 사이 빈 줄)
 
-> 상세: [docs/plans/02_FOLDER_STRUCTURE.md](docs/plans/02_FOLDER_STRUCTURE.md)
+> 상세: [docs/02_FOLDER_STRUCTURE.md](docs/02_FOLDER_STRUCTURE.md)
 
 ---
 
@@ -129,7 +129,7 @@ const useXxx = (): UseXxxReturn => { ... return { data, isLoading }; };
 export default useXxx;
 ```
 
-> 상세: [docs/plans/04_CODE_GENERATION_GUIDE.md](docs/plans/04_CODE_GENERATION_GUIDE.md)
+> 상세: [docs/04_CODE_GENERATION_GUIDE.md](docs/04_CODE_GENERATION_GUIDE.md)
 
 ---
 
@@ -148,12 +148,12 @@ export default useXxx;
 
 | 문서 | 설명 |
 |------|------|
-| [docs/plans/00_QUICK_REFERENCE.md](docs/plans/00_QUICK_REFERENCE.md) | 퀵 레퍼런스 (전체 요약) |
-| [docs/plans/01_ARCHITECTURE.md](docs/plans/01_ARCHITECTURE.md) | 시스템 구조, 기술스택, 데이터 플로우, API |
-| [docs/plans/02_FOLDER_STRUCTURE.md](docs/plans/02_FOLDER_STRUCTURE.md) | 디렉토리 역할, 파일 네이밍, import 순서 |
-| [docs/plans/03_CODE_CONVENTIONS.md](docs/plans/03_CODE_CONVENTIONS.md) | TS/React/Zustand/Tailwind/API/UX 라이팅 규칙 |
-| [docs/plans/04_CODE_GENERATION_GUIDE.md](docs/plans/04_CODE_GENERATION_GUIDE.md) | 컴포넌트/페이지/훅/스토어/유틸 생성 템플릿 |
-| [docs/plans/05_WIDGETS_GUIDE.md](docs/plans/05_WIDGETS_GUIDE.md) | UI 컴포넌트 카탈로그 (Toss UX + 컬러 + shadcn/ui) |
+| [docs/00_QUICK_REFERENCE.md](docs/00_QUICK_REFERENCE.md) | 퀵 레퍼런스 (전체 요약) |
+| [docs/01_ARCHITECTURE.md](docs/01_ARCHITECTURE.md) | 시스템 구조, 기술스택, 데이터 플로우, API |
+| [docs/02_FOLDER_STRUCTURE.md](docs/02_FOLDER_STRUCTURE.md) | 디렉토리 역할, 파일 네이밍, import 순서 |
+| [docs/03_CODE_CONVENTIONS.md](docs/03_CODE_CONVENTIONS.md) | TS/React/Zustand/Tailwind/API/UX 라이팅 규칙 |
+| [docs/04_CODE_GENERATION_GUIDE.md](docs/04_CODE_GENERATION_GUIDE.md) | 컴포넌트/페이지/훅/스토어/유틸 생성 템플릿 |
+| [docs/05_WIDGETS_GUIDE.md](docs/05_WIDGETS_GUIDE.md) | UI 컴포넌트 카탈로그 (Toss UX + 컬러 + shadcn/ui) |
 | [docs/PRD.md](docs/PRD.md) | 프로젝트 기획서 (PRD v1.2) |
 | [docs/TOSS_UI_UX_DESIGN.md](docs/TOSS_UI_UX_DESIGN.md) | UX 원칙 & 라이팅 가이드 |
 | [docs/Moaplace_ColorSystem.md](docs/Moaplace_ColorSystem.md) | 컬러 시스템 v2.1 (18색) |
