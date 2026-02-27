@@ -9,6 +9,11 @@ React 프론트엔드 코드를 **6개 독립 영역으로 병렬 리뷰**합니
 /config set --thinking false
 ```
 
+> **리뷰 완료 후** 반드시 thinking을 다시 활성화하세요:
+> ```
+> /config set --thinking true
+> ```
+
 ## 실행 방법
 
 이 커맨드가 호출되면 아래 6개 에이전트를 **동시에** Task tool로 dispatch하세요.
