@@ -25,12 +25,18 @@ npm run preview    # 프로덕션 빌드 프리뷰
 
 **3계층:** Client(React+Vite+PWA) → Server(Spring Boot 3.x) → Redis(TTL 24h)
 
+**클린 아키텍처 (DIP):** 외부 의존(API, Storage)은 반드시 Port(인터페이스) → Adapter(구현체) → Factory(선택) 구조로 설계. 스토어/훅은 인터페이스에만 의존.
+
 ```
 src/
 ├── pages/          # 라우트 페이지 (HomePage, RoomPage)
 ├── components/     # UI 컴포넌트 (Map/, Three/, Panel/, Common/, Home/)
 ├── hooks/          # 커스텀 훅 (useMap, useRoom, useGeolocation, usePWA, useThreeView)
-├── lib/            # 순수 유틸 (api, centroid, tsp, haversine, clipboard, utils)
+├── lib/            # 유틸 + API 레이어 (Port/Adapter/Factory 패턴)
+│   ├── api.interface.ts  # Port — ApiClient 인터페이스
+│   ├── api.mock.ts       # Adapter — localStorage 목업
+│   ├── api.ts            # Factory — 구현체 선택 및 export
+│   └── *.ts              # 순수 유틸 (clipboard, utils)
 ├── store/          # Zustand 스토어 (roomStore, uiStore)
 ├── constants/      # 상수 (colors — AppColors 18색)
 ├── types/          # TypeScript 타입
@@ -84,6 +90,7 @@ Toss UI/UX 원칙 적용 — 터치 44px+, 1Thing/1Page, 스켈레톤 UI, 비격
 - Zustand selector로 필요한 상태만 구독
 - Tailwind 커스텀 컬러 토큰 + `cn()` 유틸로 조건부 클래스
 - 한국어 비격식체(해요체) 마이크로카피
+- **클린 아키텍처: 외부 의존은 Port(interface) → Adapter(구현체) → Factory(export) 구조**
 
 ### DON'T
 
@@ -91,6 +98,7 @@ Toss UI/UX 원칙 적용 — 터치 44px+, 1Thing/1Page, 스켈레톤 UI, 비격
 - 인라인 `style={{}}`, 하드코딩 색상
 - `index.ts` 배럴 export, 전체 스토어 구독
 - 강요형 UX 문구 ("반드시 ~해야 합니다")
+- **스토어/훅에서 구현체 직접 import (반드시 Factory를 통해 접근)**
 
 > 상세: [docs/03_CODE_CONVENTIONS.md](docs/03_CODE_CONVENTIONS.md)
 
@@ -160,4 +168,4 @@ export default useXxx;
 
 ---
 
-**Last Updated:** 2026-02-27
+**Last Updated:** 2026-02-28

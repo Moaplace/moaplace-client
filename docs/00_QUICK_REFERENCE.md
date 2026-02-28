@@ -30,7 +30,7 @@ src/
 ├── pages/          # 라우트 페이지 (HomePage, RoomPage)
 ├── components/     # UI 컴포넌트 (Map/, Three/, Panel/, Common/, Home/)
 ├── hooks/          # 커스텀 훅 (useMap, useRoom, useGeolocation, usePWA, useThreeView)
-├── lib/            # 순수 유틸 (api, centroid, tsp, haversine, clipboard, utils)
+├── lib/            # API 레이어 (Port/Adapter/Factory) + 순수 유틸
 ├── store/          # Zustand 스토어 (roomStore, uiStore)
 ├── constants/      # 상수 (colors)
 ├── types/          # TypeScript 타입
@@ -72,6 +72,25 @@ src/
 - `index.ts` 배럴 export
 - 전체 스토어 구독 `useStore()`
 - 강요형 UX 문구 ("반드시 ~해야 합니다")
+- 구현체 직접 import (`api.mock` → `api` Factory 사용)
+
+## 클린 아키텍처 (API 레이어)
+
+> 상세: [03_CODE_CONVENTIONS.md](./03_CODE_CONVENTIONS.md) §5
+
+```
+Port(interface) → Adapter(구현체) → Factory(export)
+```
+
+```
+api.interface.ts   # 계약 정의
+api.mock.ts        # localStorage 목업
+api.ts             # Factory: 구현체 선택 → default export
+```
+
+스토어/훅은 `import api from '@/lib/api'` (Factory)만 사용. 구현체 직접 import 금지.
+
+---
 
 ## 코드 생성 빠른 참조
 

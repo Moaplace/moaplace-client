@@ -1180,9 +1180,14 @@ git commit -m "feat : 위치 확정 바텀시트 및 마커 등록 플로우 구
 
 ---
 
-## Phase 4: 핵심 로직 (TDD)
+## Phase 4: ~~핵심 로직 (TDD)~~ → 서버 이관
 
-### Task 12: Haversine 거리 계산
+> **변경:** Phase 4의 계산 로직(haversine, centroid, TSP)은 백엔드(`CalculationService`)가 담당한다.
+> 프론트엔드는 `GET /api/rooms/{roomId}/result` 응답을 표시만 한다.
+> Task 12~15는 프론트 범위에서 제외하고 백엔드 이슈로 이관한다.
+> 목업 API의 `getResult`는 백엔드 연동 시점까지 `null`을 반환한다.
+
+### ~~Task 12: Haversine 거리 계산~~ (서버 이관)
 
 **Files:**
 - Create: `src/lib/haversine.ts`

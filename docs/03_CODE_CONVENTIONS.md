@@ -115,8 +115,8 @@ const MapView = ({ onMarkerPlace }: MapViewProps) => {
 - 복잡한 분기: 조기 return
 
 ```tsx
-// DO: 단순 조건
-{markers.length >= 2 && <CenterPoint position={centroid} />}
+// DO: 단순 조건 — 서버 응답 기반으로 판단 (비즈니스 규칙 하드코딩 금지)
+{result && <CenterPoint position={result.centroid} />}
 {isLoading ? <Skeleton /> : <ResultPanel data={result} />}
 
 // DO: 복잡한 분기
@@ -229,52 +229,82 @@ export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
   <h1 className="text-xl md:text-2xl lg:text-3xl">
 ```
 
-## 5. API 통신 (Axios)
+## 5. API 통신 (클린 아키텍처)
 
-### 5.1 API 클라이언트 구조
+### 5.1 Port/Adapter/Factory 패턴
+
+외부 의존(API, Storage 등)은 반드시 **Port → Adapter → Factory** 3단계 구조로 설계한다.
+스토어/훅은 구현체를 직접 import하지 않고, Factory가 export하는 인스턴스만 사용한다.
+
+```
+src/lib/
+├── api.interface.ts   # Port — 계약 (interface)
+├── api.mock.ts        # Adapter — localStorage 목업 구현체
+├── api.http.ts        # Adapter — axios 실서버 구현체 (나중에)
+└── api.ts             # Factory — 현재 구현체 선택 및 export
+```
+
+### 5.2 Port (인터페이스)
+
+```ts
+// src/lib/api.interface.ts
+import type { Room, Marker, MarkerRequest, RoomResult } from '@/types';
+
+export interface ApiClient {
+  createRoom(name: string): Promise<Room>;
+  getRoom(roomId: string): Promise<Room>;
+  addMarker(roomId: string, req: MarkerRequest): Promise<Marker>;
+  deleteMarker(roomId: string, markerId: string): Promise<void>;
+  getResult(roomId: string): Promise<RoomResult | null>;
+}
+```
+
+### 5.3 Adapter (구현체)
+
+```ts
+// src/lib/api.mock.ts
+import type { ApiClient } from './api.interface';
+
+const mockApi: ApiClient = {
+  async createRoom(name) { /* localStorage 기반 구현 */ },
+  // ...
+};
+
+export default mockApi;
+```
+
+### 5.4 Factory (구현체 선택)
 
 ```ts
 // src/lib/api.ts
-import axios from 'axios';
-import type { Room, Marker, RoomResult } from '@/types';
+import type { ApiClient } from './api.interface';
+import mockApi from './api.mock';
 
-const client = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 10000,
-  headers: { 'Content-Type': 'application/json' },
-});
+// 백엔드 연동 시 여기만 변경:
+// import httpApi from './api.http';
+// const api: ApiClient = httpApi;
+const api: ApiClient = mockApi;
 
-export const api = {
-  createRoom: (name?: string) =>
-    client.post<Room>('/rooms', { name }).then((res) => res.data),
-
-  getRoom: (roomId: string) =>
-    client.get<Room>(`/rooms/${roomId}`).then((res) => res.data),
-
-  addMarker: (roomId: string, marker: Omit<Marker, 'id'>) =>
-    client.post<Marker>(`/rooms/${roomId}/markers`, marker).then((res) => res.data),
-
-  deleteMarker: (roomId: string, markerId: string) =>
-    client.delete(`/rooms/${roomId}/markers/${markerId}`),
-
-  getResult: (roomId: string) =>
-    client.get<RoomResult>(`/rooms/${roomId}/result`).then((res) => res.data),
-};
+export default api;
 ```
 
-### 5.2 에러 핸들링
+### 5.5 사용 규칙
 
 ```ts
-try {
-  const room = await api.getRoom(roomId);
-} catch (error) {
-  if (axios.isAxiosError(error)) {
-    if (error.response?.status === 404) {
-      // 방을 찾을 수 없는 경우
-    }
-  }
-}
+// DO: Factory를 통해 접근
+import api from '@/lib/api';
+
+// DON'T: 구현체 직접 import
+import mockApi from '@/lib/api.mock';  // ✗
 ```
+
+### 5.6 새 외부 의존 추가 시
+
+새로운 외부 서비스(지도, 알림 등)를 연동할 때도 동일 패턴 적용:
+
+1. `xxx.interface.ts` — Port 인터페이스 정의
+2. `xxx.impl.ts` — Adapter 구현체
+3. `xxx.ts` — Factory (구현체 선택 및 export)
 
 ## 6. UX 라이팅 규칙
 
