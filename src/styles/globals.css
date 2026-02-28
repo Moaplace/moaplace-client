@@ -107,7 +107,7 @@
   --radius: 1rem;
 
   /* shadcn semantic variables mapped to MoaPlace palette (OKLCH) */
-  --background: oklch(1 0 0); /* white #FFFFFF */
+  --background: oklch(0.968 0.005 264.5); /* black100 #F1F5F9 */
   --foreground: oklch(0.279 0.029 256.1); /* black800 #1E293B */
   --white: oklch(1 0 0); /* white #FFFFFF */
 

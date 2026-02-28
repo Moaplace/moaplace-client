@@ -1,7 +1,7 @@
-import type { Room, Marker, MarkerRequest, RoomResult } from '@/types';
+import type { Room, Marker, MarkerRequest, RoomResult, RoomType } from '@/types';
 
 export interface ApiClient {
-  createRoom(name: string): Promise<Room>;
+  createRoom(name: string, type: RoomType, dates?: string[]): Promise<Room>;
   getRoom(roomId: string): Promise<Room>;
   addMarker(roomId: string, req: MarkerRequest): Promise<Marker>;
   deleteMarker(roomId: string, markerId: string): Promise<void>;

@@ -1,8 +1,13 @@
+/** 방 유형 — 장소 모으기 또는 시간 모으기 */
+export type RoomType = 'place' | 'time';
+
 /** 방 (Room) — UUID 기반 모임 단위 */
 export interface Room {
   id: string;
   name: string;
+  type: RoomType;
   markers: Marker[];
+  dates?: string[];
   createdAt: string;
 }
 

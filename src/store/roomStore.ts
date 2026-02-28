@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Room, RoomResult, MarkerRequest } from '@/types';
+import type { Room, RoomResult, MarkerRequest, RoomType } from '@/types';
 import api from '@/lib/api';
 import { extractErrorMessage } from '@/lib/utils';
 
@@ -9,7 +9,7 @@ interface RoomState {
   isLoading: boolean;
   error: string | null;
 
-  createRoom: (name: string) => Promise<Room>;
+  createRoom: (name: string, type: RoomType, dates?: string[]) => Promise<Room>;
   fetchRoom: (id: string) => Promise<void>;
   addMarker: (req: MarkerRequest) => Promise<void>;
   deleteMarker: (markerId: string) => Promise<void>;
@@ -22,10 +22,10 @@ export const useRoomStore = create<RoomState>((set, get) => ({
   isLoading: false,
   error: null,
 
-  createRoom: async (name) => {
+  createRoom: async (name, type, dates) => {
     set({ isLoading: true, error: null });
     try {
-      const room = await api.createRoom(name);
+      const room = await api.createRoom(name, type, dates);
       set({ room, isLoading: false });
       return room;
     } catch (e) {
