@@ -12,7 +12,7 @@ const PWAInstallBanner = ({ onInstall, onDismiss, className }: PWAInstallBannerP
     <div
       className={cn(
         'flex items-center justify-between gap-3',
-        'px-4 py-3 mx-4 rounded-lg',
+        'px-4 py-3 mx-4 rounded-xl',
         'bg-primary-100 border border-primary/20',
         className,
       )}
