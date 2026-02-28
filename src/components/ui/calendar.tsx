@@ -160,6 +160,18 @@ function Calendar({
             <ChevronDownIcon className={cn("size-4", className)} {...props} />
           )
         },
+        MonthCaption: ({ calendarMonth, displayIndex, ...props }) => {
+          const month = calendarMonth.date.getMonth() + 1;
+          const prev = month === 1 ? 12 : month - 1;
+          const next = month === 12 ? 1 : month + 1;
+          return (
+            <div {...props}>
+              <span className="text-sm text-black-400">{prev}</span>
+              <span className="text-xl font-pretendard-bd text-black">{month}</span>
+              <span className="text-sm text-black-400">{next}</span>
+            </div>
+          );
+        },
         Weekday: ({ className, ...props }) => {
           const text = String(props.children ?? '');
           const colorClass = text === '일' ? 'text-error' : text === '토' ? 'text-primary' : '';
