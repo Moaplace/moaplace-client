@@ -2,25 +2,10 @@ import type { Room, Marker, MarkerRequest, RoomResult } from '@/types';
 import type { ApiClient } from './api.interface';
 
 const STORAGE_KEY = 'moaplace_rooms';
-const TTL_MS = 24 * 60 * 60 * 1000; // 24시간
 
 const getRooms = (): Record<string, Room> => {
   const data = localStorage.getItem(STORAGE_KEY);
-  if (!data) return {};
-
-  const rooms: Record<string, Room> = JSON.parse(data);
-  const now = Date.now();
-  let pruned = false;
-
-  for (const id of Object.keys(rooms)) {
-    if (now - new Date(rooms[id].createdAt).getTime() > TTL_MS) {
-      delete rooms[id];
-      pruned = true;
-    }
-  }
-
-  if (pruned) saveRooms(rooms);
-  return rooms;
+  return data ? JSON.parse(data) : {};
 };
 
 const saveRooms = (rooms: Record<string, Room>) => {
