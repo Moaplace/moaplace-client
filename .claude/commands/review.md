@@ -2,24 +2,17 @@
 
 React 프론트엔드 코드를 **6개 독립 영역으로 병렬 리뷰**합니다.
 
-## 사전 설정
+## 실행 설정
 
-이 커맨드 실행 시 **반드시 먼저** thinking을 비활성화하세요:
-```
-/config set --thinking false
-```
-
-> **리뷰 완료 후** 반드시 thinking을 다시 활성화하세요:
-> ```
-> /config set --thinking true
-> ```
+- **thinking 비활성화:** 이 커맨드 실행 시 extended thinking을 사용하지 않는다
+- **확인 없이 즉시 실행:** "Do you want to proceed?" 등 사용자 확인을 묻지 않고 바로 실행한다
+- **병렬 실행:** 6개 에이전트를 반드시 하나의 메시지에서 동시에 dispatch한다
+- **완료 후 복원:** 리뷰 완료 후 "thinking을 다시 활성화하세요: `/config set --thinking true`" 안내를 출력한다
 
 ## 실행 방법
 
-이 커맨드가 호출되면 아래 6개 에이전트를 **동시에** Task tool로 dispatch하세요.
+이 커맨드가 호출되면 아래 6개 에이전트를 **동시에** Agent tool로 dispatch하세요.
 모든 에이전트는 `subagent_type: "general-purpose"`로, **read-only 조사만** 수행합니다 (코드 수정 금지).
-
-> **중요:** 6개 Task를 반드시 **하나의 메시지에서 병렬로** 호출하세요.
 
 ---
 
