@@ -1,4 +1,4 @@
-import type { Room, Marker, MarkerRequest, RoomResult } from '@/types';
+import type { Room, Marker, MarkerRequest, RoomResult, RoomType } from '@/types';
 import type { ApiClient } from './api.interface';
 
 const STORAGE_KEY = 'moaplace_rooms';
@@ -25,11 +25,13 @@ const mutateRooms = (fn: (rooms: Record<string, Room>) => void) => {
 };
 
 const mockApi: ApiClient = {
-  async createRoom(name: string): Promise<Room> {
+  async createRoom(name: string, type: RoomType, dates?: string[]): Promise<Room> {
     const room: Room = {
       id: crypto.randomUUID(),
       name: name.trim() || '이름 없는 모임',
+      type,
       markers: [],
+      dates,
       createdAt: new Date().toISOString(),
     };
     mutateRooms((rooms) => {
