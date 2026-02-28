@@ -160,6 +160,13 @@ function Calendar({
             <ChevronDownIcon className={cn("size-4", className)} {...props} />
           )
         },
+        Weekday: ({ className, ...props }) => {
+          const text = String(props.children ?? '');
+          const colorClass = text === '일' ? 'text-error' : text === '토' ? 'text-primary' : '';
+          return (
+            <th className={cn(className, colorClass)} {...props} />
+          );
+        },
         DayButton: CalendarDayButton,
         WeekNumber: ({ children, ...props }) => {
           return (
