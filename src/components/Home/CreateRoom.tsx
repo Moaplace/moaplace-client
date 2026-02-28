@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import { ko } from 'react-day-picker/locale';
+
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
@@ -41,9 +43,11 @@ const CreateRoom = ({ roomType }: CreateRoomProps) => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
       <div className="flex flex-col gap-2">
-        <label className="text-sm font-pretendard-sb text-black-800">
-          모임 이름
-        </label>
+        <div className="flex flex-col items-center gap-1">
+          <label className="text-base font-pretendard-sb text-black">
+            모임 이름
+          </label>
+        </div>
         <Input
           type="text"
           value={roomName}
@@ -55,17 +59,24 @@ const CreateRoom = ({ roomType }: CreateRoomProps) => {
 
       {roomType === 'time' && (
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-pretendard-sb text-black-800">
-            모임 날짜
-          </label>
+          <div className="flex flex-col items-center gap-1">
+            <label className="text-base font-pretendard-sb text-black">
+              모임 날짜
+            </label>
+            <p className="text-sm text-black-600">
+              여러 날짜를 선택할 수 있어요!
+            </p>
+          </div>
           <Calendar
             mode="multiple"
+            locale={ko}
             selected={selectedDates}
             onSelect={(dates) => setSelectedDates(dates ?? [])}
             showOutsideDays={false}
-            className="w-full rounded-2xl bg-white shadow-sm p-5 [--cell-size:--spacing(14)]"
+            className="w-full rounded-2xl bg-white shadow-sm p-5 [--cell-size:--spacing(12)]"
             classNames={{
-              months: "w-full",
+              root: "w-full",
+              months: "w-full flex flex-col relative",
               month: "w-full",
               month_caption: "flex items-center justify-center gap-3 h-12 mb-2",
               weekdays: "flex w-full",
@@ -73,7 +84,7 @@ const CreateRoom = ({ roomType }: CreateRoomProps) => {
               week: "flex w-full mt-1",
               day: "relative flex-1 p-0 text-center aspect-square select-none",
               today: "rounded-full bg-primary text-primary-foreground",
-              nav: "flex items-center gap-1 w-full absolute top-0 inset-x-0 justify-between",
+              nav: "flex items-center w-full absolute top-0 inset-x-0 justify-between h-12 px-1 z-10",
             }}
           />
         </div>
