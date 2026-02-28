@@ -62,7 +62,19 @@ const CreateRoom = ({ roomType }: CreateRoomProps) => {
             mode="multiple"
             selected={selectedDates}
             onSelect={(dates) => setSelectedDates(dates ?? [])}
-            className="rounded-xl border border-black-300 p-3"
+            showOutsideDays={false}
+            className="w-full rounded-2xl bg-white shadow-sm p-5 [--cell-size:--spacing(14)]"
+            classNames={{
+              months: "w-full",
+              month: "w-full",
+              month_caption: "flex items-center justify-center gap-3 h-12 mb-2",
+              weekdays: "flex w-full",
+              weekday: "flex-1 text-sm font-pretendard-sb text-black-600",
+              week: "flex w-full mt-1",
+              day: "relative flex-1 p-0 text-center aspect-square select-none",
+              today: "rounded-full bg-primary text-primary-foreground",
+              nav: "flex items-center gap-1 w-full absolute top-0 inset-x-0 justify-between",
+            }}
           />
         </div>
       )}
