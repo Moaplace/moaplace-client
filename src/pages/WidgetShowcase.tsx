@@ -61,9 +61,9 @@ const WidgetShowcase = () => {
   const [nickname, setNickname] = useState("");
 
   return (
-    <div className="min-h-dvh bg-background pb-safe">
+    <div className="pb-safe">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3 pt-safe">
+      <header className="sticky top-0 z-10 bg-background border-b border-border py-3 pt-safe -mx-4 px-4">
         <h1 className="font-pretendard-bd text-xl text-foreground text-center">
           Widget Showcase
         </h1>
@@ -72,7 +72,7 @@ const WidgetShowcase = () => {
         </p>
       </header>
 
-      <main className="max-w-xl mx-auto px-4 py-6 space-y-8">
+      <div className="py-6 space-y-8">
         {/* Colors */}
         <Section title="Colors">
           <div className="grid grid-cols-4 gap-2">
@@ -425,7 +425,7 @@ const WidgetShowcase = () => {
             fade-in / scale-up / slide-up
           </p>
         </Section>
-      </main>
+      </div>
     </div>
   );
 };
