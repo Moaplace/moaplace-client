@@ -53,9 +53,6 @@ moaplace-client/
 │   │   ├── api.interface.ts        # Port — ApiClient 인터페이스
 │   │   ├── api.mock.ts             # Adapter — localStorage 목업 구현체
 │   │   ├── api.ts                  # Factory — 구현체 선택 및 export
-│   │   ├── centroid.ts
-│   │   ├── tsp.ts
-│   │   ├── haversine.ts
 │   │   ├── clipboard.ts
 │   │   └── utils.ts                # cn() 등 공통 유틸
 │   ├── store/                      # Zustand 스토어
@@ -88,7 +85,7 @@ moaplace-client/
 | `components/` | 재사용 가능한 UI 컴포넌트, 도메인별 하위 폴더로 그룹핑 | `Map/`, `Three/`, `Panel/`, `Common/`, `Home/` |
 | `components/Common/` | 도메인 무관 공통 UI (shadcn/ui 패턴) | `Button`, `Input`, `Toast`, `Modal` |
 | `hooks/` | 커스텀 React 훅. 로직 재사용 단위 | `useMap`, `useRoom`, `useGeolocation` |
-| `lib/` | 순수 함수 유틸리티 + API 레이어 (Port/Adapter/Factory). React에 의존하지 않는 로직 | `api.interface`, `api.mock`, `api`, `centroid`, `tsp`, `haversine` |
+| `lib/` | API 레이어 (Port/Adapter/Factory) + 순수 함수 유틸리티. React에 의존하지 않는 로직 | `api.interface`, `api.mock`, `api`, `clipboard`, `utils` |
 | `store/` | Zustand 전역 상태 스토어 | `roomStore`, `uiStore` |
 | `constants/` | 앱 전역 상수 (컬러, 설정값 등) | `colors.ts` |
 | `types/` | TypeScript 타입/인터페이스 정의 | `index.ts` |

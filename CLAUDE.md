@@ -36,7 +36,7 @@ src/
 │   ├── api.interface.ts  # Port — ApiClient 인터페이스
 │   ├── api.mock.ts       # Adapter — localStorage 목업
 │   ├── api.ts            # Factory — 구현체 선택 및 export
-│   └── *.ts              # 순수 유틸 (centroid, tsp, haversine, utils)
+│   └── *.ts              # 순수 유틸 (clipboard, utils)
 ├── store/          # Zustand 스토어 (roomStore, uiStore)
 ├── constants/      # 상수 (colors — AppColors 18색)
 ├── types/          # TypeScript 타입

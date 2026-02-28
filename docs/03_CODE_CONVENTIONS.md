@@ -115,8 +115,8 @@ const MapView = ({ onMarkerPlace }: MapViewProps) => {
 - 복잡한 분기: 조기 return
 
 ```tsx
-// DO: 단순 조건
-{markers.length >= 2 && <CenterPoint position={centroid} />}
+// DO: 단순 조건 — 서버 응답 기반으로 판단 (비즈니스 규칙 하드코딩 금지)
+{result && <CenterPoint position={result.centroid} />}
 {isLoading ? <Skeleton /> : <ResultPanel data={result} />}
 
 // DO: 복잡한 분기

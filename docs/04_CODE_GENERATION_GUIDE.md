@@ -272,32 +272,34 @@ import mockXxx from '@/lib/{name}.mock';  // ✗
 
 ## 6. 유틸리티 함수 생성 템플릿
 
-`src/lib/` 하위에 생성:
+`src/lib/` 하위에 생성. **프론트 유틸은 UI 보조 함수만 해당** (clipboard, formatting 등).
+
+> **주의:** 계산 로직(centroid, TSP, haversine)은 서버 책임. `src/lib/`에 구현하지 않는다.
 
 ```ts
 // 순수 함수, React 의존성 없음
 // JSDoc 주석으로 입력/출력 설명
 
 /**
- * 두 좌표 사이의 거리를 Haversine 공식으로 계산한다.
- * @param lat1 - 출발지 위도
- * @param lng1 - 출발지 경도
- * @param lat2 - 도착지 위도
- * @param lng2 - 도착지 경도
- * @returns 거리 (km)
+ * 텍스트를 클립보드에 복사한다.
+ * navigator.clipboard API 사용, 미지원 시 textarea 폴백.
  */
-export const haversine = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
-  const R = 6371;
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
+export const copyToClipboard = async (text: string): Promise<boolean> => {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    const success = document.execCommand('copy');
+    document.body.removeChild(textarea);
+    return success;
+  }
 };
-
-const toRad = (deg: number): number => (deg * Math.PI) / 180;
 ```
 
 ## 7. 금지 패턴

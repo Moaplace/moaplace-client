@@ -83,7 +83,11 @@
 | `DELETE` | `/api/rooms/{roomId}/markers/{markerId}` | 마커 삭제 |
 | `GET` | `/api/rooms/{roomId}/result` | 중심점 + 최단거리 결과 |
 
-## 5. 핵심 알고리즘
+## 5. 핵심 알고리즘 (서버 책임)
+
+> **주의:** 아래 알고리즘은 **백엔드(Spring Boot `CalculationService`)가 수행**한다.
+> 프론트엔드는 `GET /api/rooms/{roomId}/result` 응답을 표시만 한다.
+> centroid/TSP/haversine을 프론트에 구현하지 않는다.
 
 ### 5.1 중심점 계산 (Geometric Centroid)
 
