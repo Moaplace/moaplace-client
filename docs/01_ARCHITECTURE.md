@@ -107,6 +107,30 @@ c = 2 × atan2(√a, √(1-a))
 distance = R × c    (R = 6,371km)
 ```
 
+## 5.5 API 클라이언트 구조 (클린 아키텍처)
+
+의존성 역전 원칙(DIP) 적용. 스토어는 인터페이스에만 의존하고, 구현체는 팩토리에서 주입.
+
+```
+src/lib/
+├── api.interface.ts   # Port — ApiClient 인터페이스 (계약)
+├── api.mock.ts        # Adapter — localStorage 목업 구현체
+├── api.ts             # Factory — 현재 구현체 선택 및 export
+└── api.http.ts        # Adapter — axios 실서버 구현체 (나중에)
+```
+
+교체 시 `api.ts`에서 import 한 줄만 변경:
+
+```typescript
+// Before (목업)
+import mockApi from './api.mock';
+const api: ApiClient = mockApi;
+
+// After (실서버)
+import httpApi from './api.http';
+const api: ApiClient = httpApi;
+```
+
 ## 6. 상태 관리 전략
 
 Zustand 2개 스토어로 관심사 분리:
