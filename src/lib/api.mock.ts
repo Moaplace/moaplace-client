@@ -25,13 +25,14 @@ const mutateRooms = (fn: (rooms: Record<string, Room>) => void) => {
 };
 
 const mockApi: ApiClient = {
-  async createRoom(name: string, type: RoomType, dates?: string[]): Promise<Room> {
+  async createRoom(name: string, type: RoomType, dates?: string[], password?: string): Promise<Room> {
     const room: Room = {
       id: crypto.randomUUID(),
       name: name.trim() || '이름 없는 모임',
       type,
       markers: [],
       dates,
+      password,
       createdAt: new Date().toISOString(),
     };
     mutateRooms((rooms) => {
@@ -45,6 +46,22 @@ const mockApi: ApiClient = {
     return assertRoom(rooms[roomId]);
   },
 
+  async verifyRoomPassword(roomId: string, password: string): Promise<boolean> {
+    const rooms = getRooms();
+    const room = assertRoom(rooms[roomId]);
+    if (!room.password) return true;
+    return room.password === password;
+  },
+
+  async verifyParticipant(roomId: string, nickname: string, password: string): Promise<Marker | null> {
+    const rooms = getRooms();
+    const room = assertRoom(rooms[roomId]);
+    const marker = room.markers.find((m) => m.nickname === nickname);
+    if (!marker) return null;
+    if (marker.password !== password) throw new Error('비밀번호가 틀려요');
+    return marker;
+  },
+
   async addMarker(roomId: string, req: MarkerRequest): Promise<Marker> {
     const marker: Marker = {
       id: crypto.randomUUID(),
@@ -52,6 +69,7 @@ const mockApi: ApiClient = {
       lat: req.lat,
       lng: req.lng,
       address: req.address,
+      password: req.password,
       createdAt: new Date().toISOString(),
     };
     mutateRooms((rooms) => {

@@ -1,24 +1,38 @@
 import { create } from 'zustand';
 
-interface UIState {
-  isNicknameModalOpen: boolean;
-  isResultPanelExpanded: boolean;
-  nickname: string;
+import type { EntryStep } from '@/types';
 
-  openNicknameModal: () => void;
-  closeNicknameModal: () => void;
+interface PendingLocation {
+  x: number;
+  y: number;
+}
+
+interface UIState {
+  entryStep: EntryStep;
+  nickname: string;
+  participantPassword: string;
+  pendingLocation: PendingLocation | null;
+  isLocationSheetOpen: boolean;
+
+  setEntryStep: (step: EntryStep) => void;
   setNickname: (name: string) => void;
-  toggleResultPanel: () => void;
+  setParticipantPassword: (pw: string) => void;
+  setPendingLocation: (loc: PendingLocation | null) => void;
+  openLocationSheet: () => void;
+  closeLocationSheet: () => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
-  isNicknameModalOpen: false,
-  isResultPanelExpanded: false,
+  entryStep: 'idle',
   nickname: '',
+  participantPassword: '',
+  pendingLocation: null,
+  isLocationSheetOpen: false,
 
-  openNicknameModal: () => set({ isNicknameModalOpen: true }),
-  closeNicknameModal: () => set({ isNicknameModalOpen: false }),
+  setEntryStep: (step) => set({ entryStep: step }),
   setNickname: (name) => set({ nickname: name }),
-  toggleResultPanel: () =>
-    set((s) => ({ isResultPanelExpanded: !s.isResultPanelExpanded })),
+  setParticipantPassword: (pw) => set({ participantPassword: pw }),
+  setPendingLocation: (loc) => set({ pendingLocation: loc }),
+  openLocationSheet: () => set({ isLocationSheetOpen: true }),
+  closeLocationSheet: () => set({ isLocationSheetOpen: false, pendingLocation: null }),
 }));
