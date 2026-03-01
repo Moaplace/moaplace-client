@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -11,19 +11,18 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-
-type EntryStep = 'room_password' | 'nickname' | 'participant_password';
+import type { ActiveEntryStep } from '@/types';
 
 interface EntryModalProps {
   open: boolean;
-  step: EntryStep;
+  step: ActiveEntryStep;
   hasRoomPassword: boolean;
   onRoomPasswordVerify: (password: string) => Promise<boolean>;
   onNicknameSubmit: (nickname: string) => void;
   onParticipantPasswordSubmit: (password: string) => Promise<void>;
 }
 
-const EntryModal = ({
+const EntryModal = memo(({
   open,
   step,
   hasRoomPassword,
@@ -37,6 +36,11 @@ const EntryModal = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [direction, setDirection] = useState<'forward' | 'back'>('forward');
   const [animKey, setAnimKey] = useState(0);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => { mountedRef.current = false; };
+  }, []);
 
   // step이 바뀔 때 애니메이션 트리거
   const triggerAnim = () => {
@@ -49,13 +53,14 @@ const EntryModal = ({
     setIsSubmitting(true);
     try {
       const ok = await onRoomPasswordVerify(roomPassword);
+      if (!mountedRef.current) return;
       if (ok) {
         triggerAnim();
       } else {
         toast.error('비밀번호가 틀려요');
       }
     } finally {
-      setIsSubmitting(false);
+      if (mountedRef.current) setIsSubmitting(false);
     }
   };
 
@@ -73,9 +78,11 @@ const EntryModal = ({
     try {
       await onParticipantPasswordSubmit(password.trim());
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : '참여에 실패했어요');
+      if (mountedRef.current) {
+        toast.error(err instanceof Error ? err.message : '참여에 실패했어요');
+      }
     } finally {
-      setIsSubmitting(false);
+      if (mountedRef.current) setIsSubmitting(false);
     }
   };
 
@@ -103,15 +110,21 @@ const EntryModal = ({
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleRoomPasswordSubmit} className="flex flex-col gap-4 mt-4">
-                <Input
-                  type="password"
-                  placeholder="비밀번호 입력"
-                  value={roomPassword}
-                  onChange={(e) => setRoomPassword(e.target.value)}
-                  className="h-12 px-4 text-base"
-                  autoFocus
-                />
-                <Button type="submit" size="lg" disabled={!roomPassword || isSubmitting} className="w-full">
+                <div className="flex flex-col gap-1">
+                  <Input
+                    type="password"
+                    placeholder="4~12자"
+                    value={roomPassword}
+                    onChange={(e) => setRoomPassword(e.target.value.slice(0, 12))}
+                    inputSize="lg"
+                    maxLength={12}
+                    autoFocus
+                  />
+                  {roomPassword.length > 0 && roomPassword.length < 4 && (
+                    <span className="text-xs text-error">4자 이상 입력해주세요</span>
+                  )}
+                </div>
+                <Button type="submit" size="lg" disabled={roomPassword.length < 4 || isSubmitting} className="w-full">
                   {isSubmitting ? '확인 중...' : '확인'}
                 </Button>
               </form>
@@ -133,7 +146,7 @@ const EntryModal = ({
                   placeholder="예: 홍길동"
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
-                  className="h-12 px-4 text-base"
+                  inputSize="lg"
                   autoFocus
                 />
                 <Button type="submit" size="lg" disabled={!nickname.trim()} className="w-full">
@@ -153,18 +166,24 @@ const EntryModal = ({
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-4 mt-4">
-                <Input
-                  type="password"
-                  placeholder="예: 1234"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 px-4 text-base"
-                  autoFocus
-                />
+                <div className="flex flex-col gap-1">
+                  <Input
+                    type="password"
+                    placeholder="4~12자"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value.slice(0, 12))}
+                    inputSize="lg"
+                    maxLength={12}
+                    autoFocus
+                  />
+                  {password.length > 0 && password.length < 4 && (
+                    <span className="text-xs text-error">4자 이상 입력해주세요</span>
+                  )}
+                </div>
                 <Button
                   type="submit"
                   size="lg"
-                  disabled={!password.trim() || isSubmitting}
+                  disabled={password.length < 4 || isSubmitting}
                   className="w-full"
                 >
                   {isSubmitting ? '참여 중...' : '참여하기'}
@@ -176,6 +195,8 @@ const EntryModal = ({
       </DialogContent>
     </Dialog>
   );
-};
+});
+
+EntryModal.displayName = 'EntryModal';
 
 export default EntryModal;

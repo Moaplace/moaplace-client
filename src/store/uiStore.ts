@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-type EntryStep = 'idle' | 'room_password' | 'participant' | 'done';
+import type { EntryStep } from '@/types';
 
 interface PendingLocation {
   x: number;
@@ -9,7 +9,6 @@ interface PendingLocation {
 
 interface UIState {
   entryStep: EntryStep;
-  isResultPanelExpanded: boolean;
   nickname: string;
   participantPassword: string;
   pendingLocation: PendingLocation | null;
@@ -18,8 +17,6 @@ interface UIState {
   setEntryStep: (step: EntryStep) => void;
   setNickname: (name: string) => void;
   setParticipantPassword: (pw: string) => void;
-  resetEntry: () => void;
-  toggleResultPanel: () => void;
   setPendingLocation: (loc: PendingLocation | null) => void;
   openLocationSheet: () => void;
   closeLocationSheet: () => void;
@@ -27,7 +24,6 @@ interface UIState {
 
 export const useUIStore = create<UIState>((set) => ({
   entryStep: 'idle',
-  isResultPanelExpanded: false,
   nickname: '',
   participantPassword: '',
   pendingLocation: null,
@@ -36,9 +32,6 @@ export const useUIStore = create<UIState>((set) => ({
   setEntryStep: (step) => set({ entryStep: step }),
   setNickname: (name) => set({ nickname: name }),
   setParticipantPassword: (pw) => set({ participantPassword: pw }),
-  resetEntry: () => set({ entryStep: 'idle', nickname: '', participantPassword: '' }),
-  toggleResultPanel: () =>
-    set((s) => ({ isResultPanelExpanded: !s.isResultPanelExpanded })),
   setPendingLocation: (loc) => set({ pendingLocation: loc }),
   openLocationSheet: () => set({ isLocationSheetOpen: true }),
   closeLocationSheet: () => set({ isLocationSheetOpen: false, pendingLocation: null }),

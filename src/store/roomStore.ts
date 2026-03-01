@@ -15,7 +15,6 @@ interface RoomState {
   verifyParticipant: (nickname: string, password: string) => Promise<Marker | null>;
   addMarker: (req: MarkerRequest) => Promise<void>;
   deleteMarker: (markerId: string) => Promise<void>;
-  clearRoom: () => void;
 }
 
 export const useRoomStore = create<RoomState>((set, get) => ({
@@ -82,6 +81,4 @@ export const useRoomStore = create<RoomState>((set, get) => ({
       set({ error: extractErrorMessage(e, '마커 삭제에 실패했어요'), isLoading: false });
     }
   },
-
-  clearRoom: () => set({ room: null, result: null, error: null }),
 }));

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Link2, MapPin, RefreshCw } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -7,9 +8,16 @@ interface MapActionBarProps {
   onShare: () => void;
   onRelocate: () => void;
   hasMyMarker: boolean;
+  showShare?: boolean;
 }
 
-const MapActionBar = ({ onLocate, onShare, onRelocate, hasMyMarker }: MapActionBarProps) => {
+const MapActionBar = memo(({
+  onLocate,
+  onShare,
+  onRelocate,
+  hasMyMarker,
+  showShare = true,
+}: MapActionBarProps) => {
   return (
     <div className="flex gap-3 py-3">
       {hasMyMarker ? (
@@ -32,17 +40,21 @@ const MapActionBar = ({ onLocate, onShare, onRelocate, hasMyMarker }: MapActionB
           위치 찍기
         </Button>
       )}
-      <Button
-        onClick={onShare}
-        variant="outline"
-        className="gap-2"
-        size="lg"
-      >
-        <Link2 className="w-4 h-4" />
-        공유
-      </Button>
+      {showShare && (
+        <Button
+          onClick={onShare}
+          variant="outline"
+          className="gap-2"
+          size="lg"
+        >
+          <Link2 className="w-4 h-4" />
+          공유
+        </Button>
+      )}
     </div>
   );
-};
+});
+
+MapActionBar.displayName = 'MapActionBar';
 
 export default MapActionBar;

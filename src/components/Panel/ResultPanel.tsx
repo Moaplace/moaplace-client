@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { ChevronUp, Star } from 'lucide-react';
 
 import ParticipantList from '@/components/Panel/ParticipantList';
@@ -16,7 +17,7 @@ interface ResultPanelProps {
   centroid?: { lat: number; lng: number };
 }
 
-const ResultPanel = ({ markers, myNickname, centroid }: ResultPanelProps) => {
+const ResultPanel = memo(({ markers, myNickname, centroid }: ResultPanelProps) => {
   if (markers.length === 0) return null;
 
   return (
@@ -34,7 +35,7 @@ const ResultPanel = ({ markers, myNickname, centroid }: ResultPanelProps) => {
         <div className="px-4 pb-6 flex flex-col gap-4">
           {/* 중심점 정보 */}
           {centroid && (
-            <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-red-50 border border-error/20">
+            <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-error/10 border border-error/20">
               <div className="flex items-center justify-center w-8 h-8 rounded-full bg-error text-white">
                 <Star className="w-4 h-4" />
               </div>
@@ -60,6 +61,8 @@ const ResultPanel = ({ markers, myNickname, centroid }: ResultPanelProps) => {
       </DrawerContent>
     </Drawer>
   );
-};
+});
+
+ResultPanel.displayName = 'ResultPanel';
 
 export default ResultPanel;
