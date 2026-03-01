@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Room, RoomResult, MarkerRequest, RoomType } from '@/types';
+import type { Room, Marker, RoomResult, MarkerRequest, RoomType } from '@/types';
 import api from '@/lib/api';
 import { extractErrorMessage } from '@/lib/utils';
 
@@ -9,8 +9,10 @@ interface RoomState {
   isLoading: boolean;
   error: string | null;
 
-  createRoom: (name: string, type: RoomType, dates?: string[]) => Promise<Room>;
+  createRoom: (name: string, type: RoomType, dates?: string[], password?: string) => Promise<Room>;
   fetchRoom: (id: string) => Promise<void>;
+  verifyRoomPassword: (password: string) => Promise<boolean>;
+  verifyParticipant: (nickname: string, password: string) => Promise<Marker | null>;
   addMarker: (req: MarkerRequest) => Promise<void>;
   deleteMarker: (markerId: string) => Promise<void>;
   clearRoom: () => void;
@@ -22,16 +24,28 @@ export const useRoomStore = create<RoomState>((set, get) => ({
   isLoading: false,
   error: null,
 
-  createRoom: async (name, type, dates) => {
+  createRoom: async (name, type, dates, password) => {
     set({ isLoading: true, error: null });
     try {
-      const room = await api.createRoom(name, type, dates);
+      const room = await api.createRoom(name, type, dates, password);
       set({ room, isLoading: false });
       return room;
     } catch (e) {
       set({ error: extractErrorMessage(e, '방 생성에 실패했어요'), isLoading: false });
       throw e;
     }
+  },
+
+  verifyRoomPassword: async (password) => {
+    const { room } = get();
+    if (!room) throw new Error('방 정보가 없어요');
+    return api.verifyRoomPassword(room.id, password);
+  },
+
+  verifyParticipant: async (nickname, password) => {
+    const { room } = get();
+    if (!room) throw new Error('방 정보가 없어요');
+    return api.verifyParticipant(room.id, nickname, password);
   },
 
   fetchRoom: async (id) => {

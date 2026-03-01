@@ -16,6 +16,7 @@ interface CreateRoomProps {
 
 const CreateRoom = ({ roomType }: CreateRoomProps) => {
   const [roomName, setRoomName] = useState('');
+  const [roomPassword, setRoomPassword] = useState('');
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const createRoom = useRoomStore((s) => s.createRoom);
   const isLoading = useRoomStore((s) => s.isLoading);
@@ -28,7 +29,7 @@ const CreateRoom = ({ roomType }: CreateRoomProps) => {
         roomType === 'time'
           ? selectedDates.map((d) => d.toISOString().split('T')[0])
           : undefined;
-      const room = await createRoom(roomName.trim(), roomType, dates);
+      const room = await createRoom(roomName.trim(), roomType, dates, roomPassword || undefined);
       toast.success(
         roomType === 'place'
           ? '모임이 만들어졌어요!'
@@ -53,6 +54,24 @@ const CreateRoom = ({ roomType }: CreateRoomProps) => {
           value={roomName}
           onChange={(e) => setRoomName(e.target.value)}
           placeholder="예: 주말 점심 모임"
+          className="h-12 px-4 text-base"
+        />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-col items-center gap-1">
+          <label className="text-base font-pretendard-sb text-black">
+            비밀번호
+          </label>
+          <p className="text-sm text-black-600">
+            설정하면 비밀번호를 아는 사람만 참여할 수 있어요
+          </p>
+        </div>
+        <Input
+          type="password"
+          value={roomPassword}
+          onChange={(e) => setRoomPassword(e.target.value)}
+          placeholder="비밀번호 (선택)"
           className="h-12 px-4 text-base"
         />
       </div>

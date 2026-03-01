@@ -8,6 +8,7 @@ export interface Room {
   type: RoomType;
   markers: Marker[];
   dates?: string[];
+  password?: string;
   createdAt: string;
 }
 
@@ -18,6 +19,7 @@ export interface Marker {
   lat: number;
   lng: number;
   address?: string;
+  password: string;
   createdAt: string;
 }
 
@@ -27,6 +29,7 @@ export interface MarkerRequest {
   lat: number;
   lng: number;
   address?: string;
+  password: string;
 }
 
 /** 중심점 */
