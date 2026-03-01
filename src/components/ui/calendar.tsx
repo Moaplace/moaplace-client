@@ -160,7 +160,7 @@ function Calendar({
             <ChevronDownIcon className={cn("size-4", className)} {...props} />
           )
         },
-        MonthCaption: ({ calendarMonth, displayIndex, ...props }) => {
+        MonthCaption: ({ calendarMonth, ...props }) => {
           const month = calendarMonth.date.getMonth() + 1;
           const prev = month === 1 ? 12 : month - 1;
           const next = month === 12 ? 1 : month + 1;
