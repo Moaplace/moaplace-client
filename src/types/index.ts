@@ -2,10 +2,10 @@
 export type RoomType = 'place' | 'time';
 
 /** 입장 단계 상태 머신 */
-export type EntryStep = 'idle' | 'room_password' | 'nickname' | 'participant_password' | 'done';
+export type EntryStep = 'idle' | 'room_password' | 'done';
 
-/** EntryModal에서 사용하는 입장 단계 (활성 단계만) */
-export type ActiveEntryStep = Exclude<EntryStep, 'idle' | 'done'>;
+/** EntryGate에서 사용하는 입장 단계 (활성 단계만) */
+export type ActiveEntryStep = 'room_password';
 
 /** 방 (Room) — UUID 기반 모임 단위 */
 export interface Room {

@@ -1,16 +1,17 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
+import EntryGate from '@/components/Panel/EntryGate';
 import MapActionBar from '@/components/Map/MapActionBar';
 import MockMapView from '@/components/Map/MockMapView';
-import EntryModal from '@/components/Panel/EntryModal';
 import LocationConfirmSheet from '@/components/Panel/LocationConfirmSheet';
+import ParticipantList from '@/components/Panel/ParticipantList';
+import ProfileSheet from '@/components/Panel/ProfileSheet';
 import ResultPanel from '@/components/Panel/ResultPanel';
 import RoomHeader from '@/components/Panel/RoomHeader';
 import { useRoomStore } from '@/store/roomStore';
 import { useUIStore } from '@/store/uiStore';
-import type { ActiveEntryStep } from '@/types';
 
 const RoomPage = () => {
   const { roomId } = useParams<{ roomId: string }>();
@@ -34,6 +35,8 @@ const RoomPage = () => {
   const openLocationSheet = useUIStore((s) => s.openLocationSheet);
   const closeLocationSheet = useUIStore((s) => s.closeLocationSheet);
 
+  const [isProfileSheetOpen, setIsProfileSheetOpen] = useState(false);
+
   // 방 데이터 로드
   useEffect(() => {
     if (roomId) {
@@ -47,43 +50,57 @@ const RoomPage = () => {
       if (room.password) {
         setEntryStep('room_password');
       } else {
-        setEntryStep('nickname');
+        setEntryStep('done');
       }
     }
   }, [room, entryStep, setEntryStep]);
 
   // --- Entry handlers ---
   const handleRoomPasswordVerify = useCallback(async (password: string) => {
-    const ok = await verifyRoomPassword(password);
-    if (ok) {
-      setEntryStep('nickname');
+    try {
+      const ok = await verifyRoomPassword(password);
+      if (ok) {
+        setEntryStep('done');
+      }
+      return ok;
+    } catch {
+      toast.error('비밀번호 확인에 실패했어요');
+      return false;
     }
-    return ok;
   }, [verifyRoomPassword, setEntryStep]);
 
-  const handleNicknameSubmit = useCallback((name: string) => {
-    setNickname(name);
-    setEntryStep('participant_password');
-  }, [setNickname, setEntryStep]);
+  const needsProfile = !nickname || !participantPassword;
 
-  const handleParticipantPasswordSubmit = useCallback(async (pw: string) => {
-    const existing = await verifyParticipant(nickname, pw);
-    setParticipantPassword(pw);
-    setEntryStep('done');
-    if (existing) {
-      toast.success(`${nickname}님, 다시 오셨네요!`);
+  const handleProfileSubmit = useCallback(async (name: string, pw: string) => {
+    try {
+      const existing = await verifyParticipant(name, pw);
+      setNickname(name);
+      setParticipantPassword(pw);
+      setIsProfileSheetOpen(false);
+      if (existing) {
+        toast.success(`${name}님, 다시 오셨네요!`);
+      } else {
+        toast.success('이제 지도를 탭해서 위치를 찍어주세요!');
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '참여에 실패했어요';
+      toast.error(message);
+      throw err;
     }
-  }, [nickname, verifyParticipant, setParticipantPassword, setEntryStep]);
+  }, [verifyParticipant, setNickname, setParticipantPassword]);
 
   // --- Map handlers ---
   const handleMapClick = useCallback((x: number, y: number) => {
-    if (entryStep !== 'done') return;
+    if (needsProfile) {
+      setIsProfileSheetOpen(true);
+      return;
+    }
     const hasMyMarker = room?.markers.some((m) => m.nickname === nickname);
     if (hasMyMarker) return;
 
     setPendingLocation({ x, y });
     openLocationSheet();
-  }, [entryStep, room?.markers, nickname, setPendingLocation, openLocationSheet]);
+  }, [needsProfile, room?.markers, nickname, setPendingLocation, openLocationSheet]);
 
   const handleLocationConfirm = useCallback(async () => {
     if (!pendingLocation) return;
@@ -115,9 +132,12 @@ const RoomPage = () => {
   }, []);
 
   const handleLocate = useCallback(() => {
-    if (entryStep !== 'done') return;
+    if (needsProfile) {
+      setIsProfileSheetOpen(true);
+      return;
+    }
     toast.info('지도를 탭하여 위치를 찍어주세요');
-  }, [entryStep]);
+  }, [needsProfile]);
 
   // --- Render ---
   if (isLoading && !room) {
@@ -136,59 +156,80 @@ const RoomPage = () => {
     );
   }
 
+  // 방 비밀번호 게이트 (비밀번호 있는 방만)
+  if (entryStep === 'room_password') {
+    return (
+      <EntryGate
+        roomName={room.name}
+        onRoomPasswordVerify={handleRoomPasswordVerify}
+      />
+    );
+  }
+
   const hasMyMarker = room.markers.some((m) => m.nickname === nickname);
   const hasAnyMarker = room.markers.length > 0;
-  const entryModalOpen =
-    entryStep === 'room_password' ||
-    entryStep === 'nickname' ||
-    entryStep === 'participant_password';
-
-  const entryModalStep: ActiveEntryStep =
-    entryStep === 'room_password'
-      ? 'room_password'
-      : entryStep === 'nickname'
-        ? 'nickname'
-        : 'participant_password';
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-32px)]">
-      <RoomHeader
-        roomName={room.name}
-        participantCount={room.markers.length}
-      />
+    <div className="flex h-dvh bg-background">
+      {/* 지도 영역 */}
+      <div className="flex-1 flex flex-col relative min-w-0">
+        {/* 헤더: 지도 위 오버레이 */}
+        <div className="absolute top-0 left-0 right-0 z-10">
+          <div className="flex items-center justify-between p-4 bg-white/90 backdrop-blur-sm rounded-b-2xl mx-3 mt-3 shadow-sm">
+            <RoomHeader
+              roomName={room.name}
+              participantCount={room.markers.length}
+            />
+          </div>
+        </div>
 
-      <MockMapView
-        markers={room.markers}
-        myNickname={nickname}
-        onMapClick={handleMapClick}
-        className="flex-1 min-h-0"
-      />
-
-      {/* 점진적 노출: 마커 상태에 따라 버튼 구성 변경 */}
-      <MapActionBar
-        onLocate={handleLocate}
-        onShare={handleShare}
-        onRelocate={handleRelocate}
-        hasMyMarker={hasMyMarker}
-        showShare={hasAnyMarker}
-      />
-
-      {/* 결과 패널: 마커가 있을 때만 */}
-      {hasAnyMarker && (
-        <ResultPanel
+        <MockMapView
           markers={room.markers}
           myNickname={nickname}
+          onMapClick={handleMapClick}
+          className="flex-1 min-h-0"
         />
+
+        {/* 플로팅 액션 바 */}
+        <MapActionBar
+          onLocate={handleLocate}
+          onShare={handleShare}
+          onRelocate={handleRelocate}
+          hasMyMarker={hasMyMarker}
+          showShare={hasAnyMarker}
+        />
+      </div>
+
+      {/* 데스크톱 사이드 패널 (1024px+, 마커 있을 때만) */}
+      {hasAnyMarker && (
+        <div className="hidden lg:flex lg:w-[360px] lg:flex-col lg:border-l lg:border-black-300/50 lg:bg-white lg:overflow-y-auto">
+          <div className="p-4 border-b border-black-300/50">
+            <RoomHeader
+              roomName={room.name}
+              participantCount={room.markers.length}
+            />
+          </div>
+          <div className="flex-1 p-4">
+            <ParticipantList markers={room.markers} myNickname={nickname} />
+          </div>
+        </div>
       )}
 
-      {/* 입장 모달 (3단계) */}
-      <EntryModal
-        open={entryModalOpen}
-        step={entryModalStep}
-        hasRoomPassword={!!room.password}
-        onRoomPasswordVerify={handleRoomPasswordVerify}
-        onNicknameSubmit={handleNicknameSubmit}
-        onParticipantPasswordSubmit={handleParticipantPasswordSubmit}
+      {/* 모바일/태블릿 ResultPanel (Drawer) */}
+      {hasAnyMarker && (
+        <div className="lg:hidden">
+          <ResultPanel
+            markers={room.markers}
+            myNickname={nickname}
+          />
+        </div>
+      )}
+
+      {/* 프로필 입력 Drawer (닉네임+비밀번호 미입력 시 지도 인터랙션에서 열림) */}
+      <ProfileSheet
+        open={isProfileSheetOpen}
+        onSubmit={handleProfileSubmit}
+        onClose={() => setIsProfileSheetOpen(false)}
       />
 
       {pendingLocation && (

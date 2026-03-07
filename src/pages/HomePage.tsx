@@ -6,6 +6,7 @@ import { ChevronLeft } from 'lucide-react';
 
 import FeatureSelector from '@/components/Home/FeatureSelector';
 import PWAInstallBanner from '@/components/common/PWAInstallBanner';
+import ProgressRoute from '@/components/common/ProgressRoute';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Input } from '@/components/ui/input';
@@ -48,6 +49,9 @@ const HomePage = () => {
   const steps = roomType === 'time' ? TIME_STEPS : PLACE_STEPS;
   const currentIndex = steps.indexOf(step);
   const totalSteps = steps.length;
+  const stepLabels = roomType === 'time'
+    ? ['기능', '이름', '비밀번호', '날짜']
+    : ['기능', '이름', '비밀번호'];
 
   const goTo = (target: Step, dir: 'forward' | 'back' = 'forward') => {
     setDirection(dir);
@@ -94,35 +98,42 @@ const HomePage = () => {
     }
   };
 
-  const isNameValid = roomName.trim().length >= 4 && roomName.trim().length <= 20;
+  const isNameValid = roomName.trim().length >= 2 && roomName.trim().length <= 20;
   const isPasswordValid = roomPassword.length === 0 || (roomPassword.length >= 4 && roomPassword.length <= 12);
   const isLastStep = currentIndex === totalSteps - 1;
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Enter') return;
+    if (e.nativeEvent.isComposing) return;
+
+    if (step === 'name' && isNameValid) {
+      handleNext();
+    } else if (step === 'password' && isPasswordValid) {
+      if (isLastStep) handleCreate();
+      else handleNext();
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center min-h-[calc(100dvh-32px)] py-12">
-      {/* 상단 네비게이션: 뒤로가기 + 프로그레스 도트 */}
-      <div className="relative flex items-center justify-center w-full max-w-sm mb-8">
-        {currentIndex > 0 && (
-          <button
-            type="button"
-            onClick={handleBack}
-            className="absolute left-0 flex items-center gap-1 text-sm text-black-400 hover:text-black-600 transition-colors py-1"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            뒤로
-          </button>
-        )}
-        <div className="flex gap-2">
-          {steps.map((s, i) => (
-            <div
-              key={s}
-              className={cn(
-                'w-2 h-2 rounded-full transition-colors duration-300',
-                i === currentIndex ? 'bg-primary' : 'bg-black-300',
-              )}
-            />
-          ))}
+    <div className="flex flex-col items-center min-h-dvh bg-background py-12">
+      {/* 상단 네비게이션 */}
+      <div className="flex flex-col w-full max-w-sm mb-8 gap-4">
+        <div className="h-8 flex items-center">
+          {currentIndex > 0 && (
+            <button
+              type="button"
+              onClick={handleBack}
+              className="flex items-center gap-1 text-sm text-black-400 hover:text-black-600 transition-colors py-1"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              뒤로
+            </button>
+          )}
         </div>
+        <ProgressRoute
+          steps={stepLabels}
+          currentStep={currentIndex}
+        />
       </div>
 
       {/* 스텝 콘텐츠 */}
@@ -131,7 +142,7 @@ const HomePage = () => {
           key={step}
           className={cn(
             'flex flex-col items-center gap-6 w-full animate-in fade-in duration-300',
-            direction === 'forward' ? 'slide-in-from-right-4' : 'slide-in-from-left-4',
+            direction === 'forward' ? 'slide-in-from-right-8' : 'slide-in-from-left-8',
           )}
         >
           {/* Step: 기능 선택 */}
@@ -161,7 +172,7 @@ const HomePage = () => {
                   모임 이름을 정해주세요
                 </h2>
                 <p className="text-sm text-black-600">
-                  4~20자로 입력해주세요
+                  2~20자로 입력해주세요
                 </p>
               </div>
               <div className="flex flex-col gap-1 w-full">
@@ -169,6 +180,7 @@ const HomePage = () => {
                   type="text"
                   value={roomName}
                   onChange={(e) => setRoomName(e.target.value.slice(0, 20))}
+                  onKeyDown={handleKeyDown}
                   placeholder="예: 주말 점심 모임"
                   inputSize="lg" className="w-full"
                   maxLength={20}
@@ -203,6 +215,7 @@ const HomePage = () => {
                   type="password"
                   value={roomPassword}
                   onChange={(e) => setRoomPassword(e.target.value.slice(0, 12))}
+                  onKeyDown={handleKeyDown}
                   placeholder="4~12자 (선택)"
                   inputSize="lg" className="w-full"
                   maxLength={12}
