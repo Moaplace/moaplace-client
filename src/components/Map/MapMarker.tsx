@@ -1,47 +1,38 @@
-import { MapPin, Star } from 'lucide-react';
+import { memo } from "react"
 
-import { cn } from '@/lib/utils';
-
-type MarkerType = 'mine' | 'others' | 'center';
+import MapPin from "@/components/Map/MapPin"
+import PulseMarker from "@/components/Map/PulseMarker"
+import { cn } from "@/lib/utils"
 
 interface MapMarkerProps {
-  type: MarkerType;
-  nickname?: string;
-  x: number;
-  y: number;
+  type: "mine" | "others" | "center"
+  nickname?: string
+  x: number
+  y: number
 }
 
-const markerStyles = {
-  mine: 'bg-sub text-white',
-  others: 'bg-primary text-white',
-  center: 'bg-error text-white',
-} as const;
+const MapMarker = memo(({ type, nickname, x, y }: MapMarkerProps) => {
+  if (type === "center") {
+    return (
+      <div
+        className={cn("absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none")}
+        style={{ left: `${x}%`, top: `${y}%` }}
+      >
+        <PulseMarker color="center" size="lg" label="중간지점" />
+      </div>
+    )
+  }
 
-const MapMarker = ({ type, nickname, x, y }: MapMarkerProps) => {
   return (
     <div
-      className="absolute flex flex-col items-center -translate-x-1/2 -translate-y-full pointer-events-none"
+      className={cn("absolute -translate-x-1/2 -translate-y-full pointer-events-none")}
       style={{ left: `${x}%`, top: `${y}%` }}
     >
-      {nickname && (
-        <span className="text-xs font-pretendard-md text-black-800 bg-white px-1.5 py-0.5 rounded shadow-sm mb-1 whitespace-nowrap">
-          {nickname}
-        </span>
-      )}
-      <div
-        className={cn(
-          'flex items-center justify-center w-8 h-8 rounded-full shadow-md',
-          markerStyles[type],
-        )}
-      >
-        {type === 'center' ? (
-          <Star className="w-4 h-4" />
-        ) : (
-          <MapPin className="w-4 h-4" />
-        )}
-      </div>
+      <MapPin type={type} nickname={nickname} />
     </div>
-  );
-};
+  )
+})
 
-export default MapMarker;
+MapMarker.displayName = "MapMarker"
+
+export default MapMarker

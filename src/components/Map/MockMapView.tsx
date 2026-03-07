@@ -29,17 +29,18 @@ const MockMapView = ({
   return (
     <div
       className={cn(
-        'relative bg-black-100 rounded-xl overflow-hidden cursor-crosshair select-none',
-        'bg-[radial-gradient(circle,_var(--color-black-300)_1px,_transparent_1px)] bg-[size:24px_24px]',
+        'relative rounded-xl overflow-hidden cursor-crosshair select-none',
+        'bg-gradient-to-br from-surface via-white to-primary-100/30',
+        'bg-[radial-gradient(circle,_var(--color-black-300)_0.5px,_transparent_0.5px)] bg-[size:32px_32px]',
         className,
       )}
       onClick={handleClick}
     >
       {/* 빈 상태 안내 */}
       {markers.length === 0 && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-black-400">
-          <MapPin className="w-8 h-8" />
-          <p className="text-sm">지도를 탭하여 위치를 찍어주세요</p>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-black-400">
+          <MapPin className="size-12 text-black-300" />
+          <p className="text-sm font-pretendard-md">지도를 탭해서 위치를 찍어주세요</p>
         </div>
       )}
 

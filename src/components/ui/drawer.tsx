@@ -35,7 +35,7 @@ function DrawerOverlay({
     <DrawerPrimitive.Overlay
       data-slot="drawer-overlay"
       className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/40 backdrop-blur-sm",
         className
       )}
       {...props}
@@ -63,7 +63,7 @@ function DrawerContent({
         )}
         {...props}
       >
-        <div className="bg-black-400/40 mx-auto mt-3 hidden h-1 w-10 shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
+        <div className="bg-gradient-to-r from-black-300 to-black-400 mx-auto mt-3 hidden h-1.5 w-12 shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>

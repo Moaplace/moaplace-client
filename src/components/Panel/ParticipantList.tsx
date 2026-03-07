@@ -1,6 +1,5 @@
-import { MapPin } from 'lucide-react';
-
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 import type { Marker } from '@/types';
 
 interface ParticipantListProps {
@@ -10,28 +9,26 @@ interface ParticipantListProps {
 
 const ParticipantList = ({ markers, myNickname }: ParticipantListProps) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1">
       {markers.map((marker) => {
         const isMine = marker.nickname === myNickname;
         return (
           <div
             key={marker.id}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-black-100"
+            className="flex items-center gap-3 rounded-xl p-3 transition-colors hover:bg-surface"
           >
             <div
               className={cn(
-                'flex items-center justify-center w-7 h-7 rounded-full',
-                isMine ? 'bg-sub text-white' : 'bg-primary text-white',
+                'flex items-center justify-center size-8 rounded-full text-white text-xs font-pretendard-sb',
+                isMine ? 'bg-sub' : 'bg-primary',
               )}
             >
-              <MapPin className="w-3.5 h-3.5" />
+              {marker.nickname[0]}
             </div>
             <span className="text-sm font-pretendard-md text-black-800 flex-1">
               {marker.nickname}
-              {isMine && (
-                <span className="text-xs text-black-400 ml-1">(나)</span>
-              )}
             </span>
+            {isMine && <Badge variant="sub" className="text-[10px]">나</Badge>}
           </div>
         );
       })}

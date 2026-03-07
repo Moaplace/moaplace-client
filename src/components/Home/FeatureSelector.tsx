@@ -32,10 +32,10 @@ const FeatureSelector = ({ selected, onSelect }: FeatureSelectorProps) => {
           type="button"
           onClick={() => onSelect(type)}
           className={cn(
-            'flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-colors',
+            'flex flex-col items-center gap-3 p-6 rounded-2xl border-2 transition-all duration-200 cursor-pointer',
             selected === type
-              ? 'border-primary bg-primary-100'
-              : 'border-black-300 bg-white hover:border-black-400'
+              ? 'border-primary bg-primary-100/50 shadow-md'
+              : 'border-black-300/50 bg-white hover:border-black-400 hover:shadow-sm'
           )}
         >
           <Icon

@@ -1,6 +1,7 @@
 import { memo } from 'react';
-import { ChevronUp, Star } from 'lucide-react';
+import { ChevronUp } from 'lucide-react';
 
+import PulseMarker from '@/components/Map/PulseMarker';
 import ParticipantList from '@/components/Panel/ParticipantList';
 import {
   Drawer,
@@ -35,13 +36,11 @@ const ResultPanel = memo(({ markers, myNickname, centroid }: ResultPanelProps) =
         <div className="px-4 pb-6 flex flex-col gap-4">
           {/* 중심점 정보 */}
           {centroid && (
-            <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-error/10 border border-error/20">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-error text-white">
-                <Star className="w-4 h-4" />
-              </div>
+            <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-center-100 border border-center/20">
+              <PulseMarker color="center" size="sm" />
               <div>
-                <p className="text-sm font-pretendard-sb text-black">
-                  모두의 중심점
+                <p className="text-sm font-pretendard-sb text-center-600">
+                  모두의 중간지점
                 </p>
                 <p className="text-xs text-black-600">
                   ({centroid.lng.toFixed(1)}, {centroid.lat.toFixed(1)})

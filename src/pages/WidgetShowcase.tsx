@@ -1,4 +1,10 @@
 import { useState } from "react";
+
+import MapPin from "@/components/Map/MapPin";
+import PulseMarker from "@/components/Map/PulseMarker";
+import EmptyState from "@/components/common/EmptyState";
+import ErrorState from "@/components/common/ErrorState";
+import ProgressRoute from "@/components/common/ProgressRoute";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -414,6 +420,43 @@ const WidgetShowcase = () => {
 
         <Separator />
 
+        {/* MapPin */}
+        <Section title="MapPin (신규)">
+          <div className="flex gap-6 items-end">
+            <MapPin type="mine" nickname="나" animate={false} />
+            <MapPin type="others" nickname="친구" animate={false} />
+            <MapPin type="center" animate={false} />
+          </div>
+        </Section>
+
+        <Separator />
+
+        {/* PulseMarker */}
+        <Section title="PulseMarker (신규)">
+          <div className="flex gap-8 items-center">
+            <PulseMarker color="center" size="sm" label="Small" />
+            <PulseMarker color="primary" size="md" label="Medium" />
+            <PulseMarker color="sub" size="lg" label="Large" />
+          </div>
+        </Section>
+
+        <Separator />
+
+        {/* ProgressRoute */}
+        <Section title="ProgressRoute (신규)">
+          <ProgressRoute steps={["기능", "이름", "비밀번호", "날짜"]} currentStep={2} />
+        </Section>
+
+        <Separator />
+
+        {/* EmptyState / ErrorState */}
+        <Section title="EmptyState / ErrorState (신규)">
+          <EmptyState title="아직 아무도 위치를 등록하지 않았어요" description="지도를 탭해서 첫 위치를 찍어보세요" />
+          <ErrorState message="연결이 불안정해요" onRetry={() => toast.info("다시 시도!")} />
+        </Section>
+
+        <Separator />
+
         {/* Animation test */}
         <Section title="Animations">
           <div className="flex gap-3">
@@ -423,6 +466,13 @@ const WidgetShowcase = () => {
           </div>
           <p className="text-xs text-muted-foreground">
             fade-in / scale-up / slide-up
+          </p>
+          <div className="flex gap-3 mt-3">
+            <div className="w-16 h-16 rounded-lg bg-center animate-pin-drop" />
+            <div className="w-16 h-16 rounded-full bg-center/30 animate-pulse-ring" />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            pin-drop / pulse-ring
           </p>
         </Section>
       </div>

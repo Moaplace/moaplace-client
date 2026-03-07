@@ -19,36 +19,34 @@ const MapActionBar = memo(({
   showShare = true,
 }: MapActionBarProps) => {
   return (
-    <div className="flex gap-3 py-3">
+    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-3">
       {hasMyMarker ? (
         <Button
           onClick={onRelocate}
           variant="outline"
-          className="flex-1 gap-2"
+          className="rounded-full shadow-lg gap-2"
           size="lg"
         >
-          <RefreshCw className="w-4 h-4" />
+          <RefreshCw className="size-5" />
           위치 변경
         </Button>
       ) : (
         <Button
           onClick={onLocate}
-          className="flex-1 gap-2"
+          className="rounded-full shadow-lg gap-2"
           size="lg"
         >
-          <MapPin className="w-4 h-4" />
+          <MapPin className="size-5" />
           위치 찍기
         </Button>
       )}
       {showShare && (
         <Button
           onClick={onShare}
-          variant="outline"
-          className="gap-2"
-          size="lg"
+          variant="icon-circle"
+          size="icon-lg"
         >
-          <Link2 className="w-4 h-4" />
-          공유
+          <Link2 className="size-5" />
         </Button>
       )}
     </div>
