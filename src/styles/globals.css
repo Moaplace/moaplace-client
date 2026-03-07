@@ -97,6 +97,11 @@
   --color-error: var(--destructive);
   --color-warning: var(--warning);
   --color-info: var(--info);
+  --color-center: var(--color-center);
+  --color-center-600: var(--color-center-600);
+  --color-center-100: var(--color-center-100);
+  --color-surface: var(--color-surface);
+  --color-bg: var(--color-bg);
 
   --animate-slide-up: slide-up 0.3s ease-out;
   --animate-scale-up: scale-up 0.2s ease-out;
@@ -117,7 +122,7 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.279 0.029 256.1);
 
-  --primary: oklch(0.623 0.172 259.1); /* primary #3B82F6 */
+  --primary: oklch(0.521 0.193 261.1); /* primary #2563EB */
   --primary-foreground: oklch(1 0 0); /* white */
 
   --secondary: oklch(0.968 0.005 264.5); /* black100 #F1F5F9 */
@@ -133,27 +138,36 @@
 
   --border: oklch(0.869 0.012 261.7); /* black300 #CBD5E1 */
   --input: oklch(0.869 0.012 261.7); /* black300 */
-  --ring: oklch(0.623 0.172 259.1); /* primary — focus ring */
+  --ring: oklch(0.521 0.193 261.1); /* primary — focus ring */
 
   /* Chart colors */
-  --chart-1: oklch(0.623 0.172 259.1); /* primary */
-  --chart-2: oklch(0.494 0.148 37.8); /* sub */
-  --chart-3: oklch(0.517 0.12 152.5); /* success */
+  --chart-1: oklch(0.521 0.193 261.1); /* primary */
+  --chart-2: oklch(0.768 0.165 80.1); /* sub */
+  --chart-3: oklch(0.565 0.135 163.2); /* success */
   --chart-4: oklch(0.522 0.117 75.3); /* warning */
   --chart-5: oklch(0.478 0.108 232.7); /* info */
 
   /* MoaPlace-specific colors */
   --black: oklch(0.156 0.013 256.8); /* black #0A0E12 */
   --black-400: oklch(0.702 0.022 261.3); /* black400 #94A3B8 */
-  --primary-700: oklch(0.457 0.188 261.3); /* primary700 #1D4ED8 */
-  --primary-600: oklch(0.521 0.193 261.1); /* primary600 #2563EB */
+  --primary-700: oklch(0.401 0.176 261.3); /* primary700 #1E40AF */
+  --primary-600: oklch(0.521 0.193 261.1); /* primary600 #2563EB → now same as primary */
   --primary-100: oklch(0.932 0.032 255.6); /* primary100 #DBEAFE */
-  --sub: oklch(0.494 0.148 37.8); /* sub #C2410C */
-  --sub-600: oklch(0.407 0.123 38.6); /* sub600 #9A3412 */
-  --sub-100: oklch(0.955 0.034 80.1); /* sub100 #FFEDD5 */
-  --success: oklch(0.517 0.12 152.5); /* success #15803D */
+  --sub: oklch(0.768 0.165 80.1); /* sub #F59E0B */
+  --sub-600: oklch(0.679 0.163 68.8); /* sub600 #D97706 */
+  --sub-100: oklch(0.969 0.038 95.3); /* sub100 #FEF3C7 */
+  --success: oklch(0.565 0.135 163.2); /* success #059669 */
   --warning: oklch(0.522 0.117 75.3); /* warning #A16207 */
   --info: oklch(0.478 0.108 232.7); /* info #0369A1 */
+
+  /* Center (중심점 보라) */
+  --color-center: oklch(from #7C3AED l c h);
+  --color-center-600: oklch(from #6D28D9 l c h);
+  --color-center-100: oklch(from #EDE9FE l c h);
+
+  /* Surface / Background */
+  --color-surface: oklch(from #F1F5F9 l c h);
+  --color-bg: oklch(from #F8FAFC l c h);
 }
 
 @utility pb-safe {
@@ -202,4 +216,48 @@
   to {
     opacity: 1;
   }
+}
+
+@keyframes pin-drop {
+  0% { transform: translateY(-40px) scale(0.8); opacity: 0; }
+  60% { transform: translateY(4px) scale(1.05); opacity: 1; }
+  80% { transform: translateY(-2px) scale(0.98); }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes route-draw {
+  from { stroke-dashoffset: 100%; }
+  to { stroke-dashoffset: 0%; }
+}
+
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 0.5; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+@utility animate-pin-drop {
+  animation: pin-drop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@utility animate-pulse-ring {
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+@utility animate-route-draw {
+  animation: route-draw 1s ease-in-out forwards;
+}
+@utility animate-ripple {
+  animation: ripple 0.6s ease-out;
+}
+@utility animate-shake {
+  animation: shake 0.3s ease-in-out;
 }
