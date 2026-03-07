@@ -168,4 +168,15 @@ export default useXxx;
 
 ---
 
-**Last Updated:** 2026-02-28
+## Agent Skills Reference
+
+`.agents/skills/`에 설치된 스킬을 작업 시 자동 참조한다.
+
+- **React 코드 작성/리뷰 시** → `.agents/skills/vercel-react-best-practices/rules/` 내 관련 룰 참조
+- **UI/웹 디자인 작업 시** → `.agents/skills/web-design-guidelines/SKILL.md` 참조
+- **동적 애니메이션/영상 제작 시** → `.agents/skills/remotion-best-practices/rules/` 내 관련 룰 참조
+- **새 스킬 검색이 필요할 때** → `.agents/skills/find-skills/SKILL.md` 절차에 따라 `npx skills find` 실행
+
+---
+
+**Last Updated:** 2026-03-07
