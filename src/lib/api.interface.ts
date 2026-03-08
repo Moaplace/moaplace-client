@@ -1,4 +1,7 @@
-import type { Room, Marker, MarkerRequest, RoomResult, RoomType } from '@/types';
+import type {
+  Room, Marker, MarkerRequest, RoomResult, RoomType,
+  PlaceResult, NearbyPlace, DirectionsResult, LatLng,
+} from '@/types';
 
 export interface ApiClient {
   createRoom(name: string, type: RoomType, dates?: string[], password?: string): Promise<Room>;
@@ -8,4 +11,9 @@ export interface ApiClient {
   addMarker(roomId: string, req: MarkerRequest): Promise<Marker>;
   deleteMarker(roomId: string, markerId: string): Promise<void>;
   getResult(roomId: string): Promise<RoomResult | null>;
+
+  searchPlaces(query: string): Promise<PlaceResult[]>;
+  getNearbyPlaces(lat: number, lng: number, type?: string): Promise<NearbyPlace[]>;
+  getDirections(origin: LatLng, destination: LatLng, waypoints?: LatLng[]): Promise<DirectionsResult>;
+  reverseGeocode(lat: number, lng: number): Promise<string>;
 }
