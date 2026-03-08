@@ -17,7 +17,7 @@ function App() {
             <Route path="/widget-showcase" element={<WidgetShowcase />} />
           </Routes>
         </main>
-        <Toaster position="bottom-center" />
+        <Toaster />
       </div>
     </APIProvider>
   );

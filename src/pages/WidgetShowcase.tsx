@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 import PWAInstallBanner from "@/components/common/PWAInstallBanner";
 import SearchBar from "@/components/common/SearchBar";
 
