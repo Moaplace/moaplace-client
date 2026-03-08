@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { AdvancedMarker } from '@vis.gl/react-google-maps';
 
 import MapPin from '@/components/Map/MapPin';
@@ -10,7 +11,7 @@ interface GoogleMarkerProps {
   nickname?: string;
 }
 
-const GoogleMarker = ({ type, position, nickname }: GoogleMarkerProps) => {
+const GoogleMarker = memo(({ type, position, nickname }: GoogleMarkerProps) => {
   return (
     <AdvancedMarker position={position}>
       {type === 'center' ? (
@@ -20,6 +21,8 @@ const GoogleMarker = ({ type, position, nickname }: GoogleMarkerProps) => {
       )}
     </AdvancedMarker>
   );
-};
+});
+
+GoogleMarker.displayName = 'GoogleMarker';
 
 export default GoogleMarker;

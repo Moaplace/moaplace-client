@@ -23,11 +23,13 @@ const NearbyPlaceList = ({ lat, lng, className }: NearbyPlaceListProps) => {
   const [category, setCategory] = useState<string>('all');
 
   useEffect(() => {
+    let cancelled = false;
     const fetchPlaces = async () => {
       const data = await api.getNearbyPlaces(lat, lng, category);
-      setPlaces(data);
+      if (!cancelled) setPlaces(data);
     };
     fetchPlaces();
+    return () => { cancelled = true; };
   }, [lat, lng, category]);
 
   return (

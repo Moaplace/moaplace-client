@@ -608,7 +608,7 @@ const RoomPage = () => {
   }
 
   return (
-    <div className="pb-safe flex flex-col h-[100dvh] -mx-4">
+    <div className="pb-safe flex flex-col h-dvh -mx-4">
       {/* 헤더 */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-border">
         <h1 className="font-pretendard-sb text-lg text-foreground truncate">

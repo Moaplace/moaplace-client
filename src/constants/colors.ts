@@ -77,6 +77,18 @@ export const AppColors = {
   /** 정보 — 안내 메시지 */
   info: "#0369A1",
 
+  /** 성공 100 — 토스트 배경 */
+  success100: "#ecfdf5",
+
+  /** 에러 100 — 토스트 배경 */
+  error100: "#fef2f2",
+
+  /** 경고 100 — 토스트 배경 */
+  warning100: "#fffbeb",
+
+  /** 정보 100 — 토스트 배경 */
+  info100: "#eff6ff",
+
   // ============================================
   // Center — Purple (중심점)
   // ============================================
@@ -100,5 +112,3 @@ export const AppColors = {
   /** 배경 — 페이지 배경 */
   background: "#F8FAFC",
 } as const;
-
-export type AppColorKey = keyof typeof AppColors;

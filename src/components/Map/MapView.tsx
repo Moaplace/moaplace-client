@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Map, type MapMouseEvent } from '@vis.gl/react-google-maps';
 
 import GoogleMarker from '@/components/Map/GoogleMarker';
@@ -17,6 +17,11 @@ interface MapViewProps {
 const SEOUL_CENTER = { lat: 37.5665, lng: 126.9780 };
 
 const MapView = ({ markers, myNickname, result, onMapClick, className }: MapViewProps) => {
+  const routePath = useMemo(
+    () => result?.route?.path.map((m) => ({ lat: m.lat, lng: m.lng })) ?? [],
+    [result?.route?.path],
+  );
+
   const handleClick = useCallback((e: MapMouseEvent) => {
     const pos = e.detail.latLng;
     if (pos) {
@@ -25,7 +30,7 @@ const MapView = ({ markers, myNickname, result, onMapClick, className }: MapView
   }, [onMapClick]);
 
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn('relative h-full', className)}>
       <Map
         defaultCenter={SEOUL_CENTER}
         defaultZoom={12}
@@ -51,8 +56,8 @@ const MapView = ({ markers, myNickname, result, onMapClick, className }: MapView
           />
         )}
 
-        {result?.route && result.route.path.length > 1 && (
-          <RoutePolyline path={result.route.path.map((m) => ({ lat: m.lat, lng: m.lng }))} />
+        {routePath.length > 1 && (
+          <RoutePolyline path={routePath} />
         )}
       </Map>
     </div>
