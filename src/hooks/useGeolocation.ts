@@ -7,6 +7,7 @@ interface UseGeolocationReturn {
   error: string | null;
   isLoading: boolean;
   getCurrentPosition: () => void;
+  clearPosition: () => void;
 }
 
 const useGeolocation = (): UseGeolocationReturn => {
@@ -41,7 +42,9 @@ const useGeolocation = (): UseGeolocationReturn => {
     );
   }, []);
 
-  return { position, error, isLoading, getCurrentPosition };
+  const clearPosition = useCallback(() => setPosition(null), []);
+
+  return { position, error, isLoading, getCurrentPosition, clearPosition };
 };
 
 export default useGeolocation;

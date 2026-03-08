@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,10 @@ const PlaceSearchBar = ({ onPlaceSelect, className }: PlaceSearchBarProps) => {
   const { results, search, clear } = usePlaceSearch();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
+  useEffect(() => {
+    return () => clearTimeout(debounceRef.current);
+  }, []);
+
   const handleChange = useCallback((value: string) => {
     setQuery(value);
     clearTimeout(debounceRef.current);
@@ -30,6 +34,17 @@ const PlaceSearchBar = ({ onPlaceSelect, className }: PlaceSearchBarProps) => {
       setIsOpen(true);
     }, 300);
   }, [search, clear]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      clearTimeout(debounceRef.current);
+      const q = query.trim();
+      if (!q) return;
+      search(q);
+      setIsOpen(true);
+    }
+  }, [query, search]);
 
   const handleSelect = useCallback((place: PlaceResult) => {
     onPlaceSelect(place);
@@ -45,14 +60,16 @@ const PlaceSearchBar = ({ onPlaceSelect, className }: PlaceSearchBarProps) => {
   }, [clear]);
 
   return (
-    <div className={cn('relative w-full max-w-sm', className)}>
+    <div className={cn('relative w-full', className)}>
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-black-400" />
         <Input
           value={query}
           onChange={(e) => handleChange(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="장소를 검색해보세요"
-          className="pl-9 pr-9 bg-white/95 backdrop-blur-sm shadow-md rounded-xl border-black-300/50"
+          enterKeyHint="search"
+          className="pl-9 pr-9 bg-transparent shadow-none rounded-none border-0 border-b border-black-300 focus-visible:border-primary focus-visible:ring-0 focus-visible:shadow-none"
         />
         {query && (
           <button

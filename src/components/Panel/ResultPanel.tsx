@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { ChevronUp, Route } from 'lucide-react';
+import { Route } from 'lucide-react';
 
 import NearbyPlaceList from '@/components/Map/NearbyPlaceList';
 import PulseMarker from '@/components/Map/PulseMarker';
@@ -9,7 +9,6 @@ import {
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from '@/components/ui/drawer';
 import { Separator } from '@/components/ui/separator';
 import type { Marker, RoomResult } from '@/types';
@@ -18,19 +17,16 @@ interface ResultPanelProps {
   markers: Marker[];
   myNickname: string;
   result: RoomResult | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onParticipantClick?: (marker: Marker) => void;
 }
 
-const ResultPanel = memo(({ markers, myNickname, result }: ResultPanelProps) => {
+const ResultPanel = memo(({ markers, myNickname, result, open, onOpenChange, onParticipantClick }: ResultPanelProps) => {
   if (markers.length === 0) return null;
 
   return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <button className="flex items-center justify-center gap-2 w-full py-3 text-sm font-pretendard-md text-black-600 hover:text-black-800 transition-colors">
-          <ChevronUp className="w-4 h-4" />
-          참여자 {markers.length}명 · 결과 보기
-        </button>
-      </DrawerTrigger>
+    <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>모임 결과</DrawerTitle>
@@ -80,7 +76,7 @@ const ResultPanel = memo(({ markers, myNickname, result }: ResultPanelProps) => 
 
           <div>
             <h3 className="text-sm font-pretendard-sb text-black-800 mb-2">참여자</h3>
-            <ParticipantList markers={markers} myNickname={myNickname} />
+            <ParticipantList markers={markers} myNickname={myNickname} onParticipantClick={onParticipantClick} />
           </div>
 
           {result?.centroid && (
