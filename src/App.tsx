@@ -8,7 +8,7 @@ import WidgetShowcase from "@/pages/WidgetShowcase";
 
 function App() {
   return (
-    <APIProvider apiKey={import.meta.env.GOOGLE_MAPS_API_KEY ?? ''}>
+    <APIProvider apiKey={__GOOGLE_MAPS_API_KEY__}>
       <div className="min-h-dvh bg-background">
         <Routes>
           <Route path="/room/:roomId" element={<RoomPage />} />
