@@ -10,17 +10,13 @@ function App() {
   return (
     <APIProvider apiKey={__GOOGLE_MAPS_API_KEY__}>
       <div className="min-h-dvh bg-background">
-        <Routes>
-          <Route path="/room/:roomId" element={<RoomPage />} />
-          <Route path="*" element={
-            <main className="max-w-2xl mx-auto px-5">
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/widget-showcase" element={<WidgetShowcase />} />
-              </Routes>
-            </main>
-          } />
-        </Routes>
+        <main className="max-w-2xl mx-auto px-5 h-dvh">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/room/:roomId" element={<RoomPage />} />
+            <Route path="/widget-showcase" element={<WidgetShowcase />} />
+          </Routes>
+        </main>
         <Toaster position="bottom-center" />
       </div>
     </APIProvider>

@@ -7,7 +7,6 @@ import MapActionBar from '@/components/Map/MapActionBar';
 import MapView from '@/components/Map/MapView';
 import PlaceSearchBar from '@/components/Map/PlaceSearchBar';
 import LocationConfirmSheet from '@/components/Panel/LocationConfirmSheet';
-import ParticipantList from '@/components/Panel/ParticipantList';
 import ProfileSheet from '@/components/Panel/ProfileSheet';
 import ResultPanel from '@/components/Panel/ResultPanel';
 import RoomHeader from '@/components/Panel/RoomHeader';
@@ -234,30 +233,13 @@ const RoomPage = () => {
         )}
       </div>
 
-      {/* 데스크톱 사이드 패널 (1024px+) */}
+      {/* ResultPanel (Drawer) */}
       {hasAnyMarker && (
-        <div className="hidden lg:flex lg:w-[360px] lg:flex-col lg:border-l lg:border-black-300/50 lg:bg-white lg:overflow-y-auto">
-          <div className="p-4 border-b border-black-300/50">
-            <RoomHeader
-              roomName={room.name}
-              participantCount={room.markers.length}
-            />
-          </div>
-          <div className="flex-1 p-4">
-            <ParticipantList markers={room.markers} myNickname={nickname} />
-          </div>
-        </div>
-      )}
-
-      {/* 모바일/태블릿 ResultPanel (Drawer) */}
-      {hasAnyMarker && (
-        <div className="lg:hidden">
-          <ResultPanel
-            markers={room.markers}
-            myNickname={nickname}
-            result={result}
-          />
-        </div>
+        <ResultPanel
+          markers={room.markers}
+          myNickname={nickname}
+          result={result}
+        />
       )}
 
       {/* 프로필 입력 Drawer */}
