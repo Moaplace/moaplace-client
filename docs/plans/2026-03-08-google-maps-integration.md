@@ -13,6 +13,7 @@
 ## Task 1: 패키지 설치 + 환경변수 설정
 
 **Files:**
+
 - Modify: `package.json` (npm install)
 - Modify: `vite.config.ts:7-18`
 
@@ -26,28 +27,30 @@ Run: `npm install @vis.gl/react-google-maps`
 
 ```typescript
 /// <reference types="vitest/config" />
-import { defineConfig, loadEnv } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig, loadEnv } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
+  const env = loadEnv(mode, process.cwd(), "");
   return {
     plugins: [react()],
     define: {
-      'import.meta.env.GOOGLE_MAPS_API_KEY': JSON.stringify(env.GOOGLE_MAPS_API_KEY),
+      "import.meta.env.GOOGLE_MAPS_API_KEY": JSON.stringify(
+        env.GOOGLE_MAPS_API_KEY,
+      ),
     },
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src'),
+        "@": path.resolve(__dirname, "./src"),
       },
     },
     test: {
       globals: true,
-      environment: 'node',
+      environment: "node",
     },
-  }
-})
+  };
+});
 ```
 
 **Step 3: TypeScript 환경변수 타입 선언**
@@ -78,6 +81,7 @@ git commit -m "chore: @vis.gl/react-google-maps 설치 및 환경변수 설정"
 ## Task 2: 신규 타입 추가
 
 **Files:**
+
 - Modify: `src/types/index.ts:67` (파일 끝에 추가)
 
 **Step 1: 신규 타입 정의 추가**
@@ -104,7 +108,7 @@ export interface PlaceResult {
 export interface NearbyPlace {
   id: string;
   name: string;
-  category: 'restaurant' | 'cafe' | 'subway';
+  category: "restaurant" | "cafe" | "subway";
   lat: number;
   lng: number;
   distance: number;
@@ -130,6 +134,7 @@ git commit -m "feat: 지도 연동 신규 타입 추가 (LatLng, PlaceResult, Ne
 ## Task 3: 계산 유틸 (geo.ts)
 
 **Files:**
+
 - Create: `src/lib/geo.ts`
 - Create: `src/lib/__tests__/geo.test.ts`
 
@@ -137,28 +142,31 @@ git commit -m "feat: 지도 연동 신규 타입 추가 (LatLng, PlaceResult, Ne
 
 ```typescript
 // src/lib/__tests__/geo.test.ts
-import { describe, it, expect } from 'vitest';
-import { haversine, centroid, solveTSP } from '../geo';
-import type { Marker } from '@/types';
+import { describe, it, expect } from "vitest";
+import { haversine, centroid, solveTSP } from "../geo";
+import type { Marker } from "@/types";
 
-describe('haversine', () => {
-  it('서울시청 ↔ 강남역 직선거리 약 8.9km', () => {
+describe("haversine", () => {
+  it("서울시청 ↔ 강남역 직선거리 약 8.9km", () => {
     const d = haversine(
-      { lat: 37.5665, lng: 126.9780 }, // 서울시청
+      { lat: 37.5665, lng: 126.978 }, // 서울시청
       { lat: 37.4979, lng: 127.0276 }, // 강남역
     );
     expect(d).toBeGreaterThan(8);
     expect(d).toBeLessThan(10);
   });
 
-  it('같은 좌표는 0', () => {
-    const d = haversine({ lat: 37.5665, lng: 126.9780 }, { lat: 37.5665, lng: 126.9780 });
+  it("같은 좌표는 0", () => {
+    const d = haversine(
+      { lat: 37.5665, lng: 126.978 },
+      { lat: 37.5665, lng: 126.978 },
+    );
     expect(d).toBe(0);
   });
 });
 
-describe('centroid', () => {
-  it('두 점의 중심', () => {
+describe("centroid", () => {
+  it("두 점의 중심", () => {
     const c = centroid([
       { lat: 37.0, lng: 127.0 },
       { lat: 38.0, lng: 128.0 },
@@ -167,35 +175,35 @@ describe('centroid', () => {
     expect(c.lng).toBeCloseTo(127.5, 1);
   });
 
-  it('빈 배열은 0,0', () => {
+  it("빈 배열은 0,0", () => {
     const c = centroid([]);
     expect(c.lat).toBe(0);
     expect(c.lng).toBe(0);
   });
 });
 
-describe('solveTSP', () => {
+describe("solveTSP", () => {
   const mkMarker = (id: string, lat: number, lng: number): Marker => ({
     id,
     nickname: id,
     lat,
     lng,
-    password: 'test',
+    password: "test",
     createdAt: new Date().toISOString(),
   });
 
-  it('2개 마커 → 경로 포함, 거리 > 0', () => {
+  it("2개 마커 → 경로 포함, 거리 > 0", () => {
     const markers = [
-      mkMarker('a', 37.5665, 126.9780),
-      mkMarker('b', 37.4979, 127.0276),
+      mkMarker("a", 37.5665, 126.978),
+      mkMarker("b", 37.4979, 127.0276),
     ];
     const result = solveTSP(markers);
     expect(result.path).toHaveLength(2);
     expect(result.totalDistance).toBeGreaterThan(0);
   });
 
-  it('1개 마커 → 거리 0', () => {
-    const markers = [mkMarker('a', 37.5665, 126.9780)];
+  it("1개 마커 → 거리 0", () => {
+    const markers = [mkMarker("a", 37.5665, 126.978)];
     const result = solveTSP(markers);
     expect(result.path).toHaveLength(1);
     expect(result.totalDistance).toBe(0);
@@ -212,7 +220,7 @@ Expected: FAIL — 모듈 없음
 
 ```typescript
 // src/lib/geo.ts
-import type { LatLng, Marker, RouteResult } from '@/types';
+import type { LatLng, Marker, RouteResult } from "@/types";
 
 const EARTH_RADIUS_KM = 6371;
 
@@ -224,7 +232,9 @@ export const haversine = (a: LatLng, b: LatLng): number => {
   const dLng = toRad(b.lng - a.lng);
   const sinLat = Math.sin(dLat / 2);
   const sinLng = Math.sin(dLng / 2);
-  const h = sinLat * sinLat + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * sinLng * sinLng;
+  const h =
+    sinLat * sinLat +
+    Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * sinLng * sinLng;
   return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(h));
 };
 
@@ -293,6 +303,7 @@ git commit -m "feat: 계산 유틸 추가 (haversine, centroid, solveTSP)"
 ## Task 4: 클립보드 유틸 (clipboard.ts)
 
 **Files:**
+
 - Create: `src/lib/clipboard.ts`
 
 **Step 1: clipboard.ts 구현**
@@ -311,14 +322,14 @@ export const copyToClipboard = async (text: string): Promise<boolean> => {
 };
 
 const fallbackCopy = (text: string): boolean => {
-  const textarea = document.createElement('textarea');
+  const textarea = document.createElement("textarea");
   textarea.value = text;
-  textarea.style.position = 'fixed';
-  textarea.style.opacity = '0';
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
   document.body.appendChild(textarea);
   textarea.select();
   try {
-    return document.execCommand('copy');
+    return document.execCommand("copy");
   } finally {
     document.body.removeChild(textarea);
   }
@@ -337,6 +348,7 @@ git commit -m "feat: 클립보드 유틸 추가 (navigator.clipboard + textarea 
 ## Task 5: Mock 데이터 파일 생성
 
 **Files:**
+
 - Create: `src/mock/places.json`
 - Create: `src/mock/nearby.json`
 - Create: `src/mock/directions.json`
@@ -345,18 +357,90 @@ git commit -m "feat: 클립보드 유틸 추가 (navigator.clipboard + textarea 
 
 ```json
 [
-  { "placeId": "p1", "name": "강남역", "address": "서울특별시 강남구 강남대로 396", "lat": 37.4979, "lng": 127.0276 },
-  { "placeId": "p2", "name": "홍대입구역", "address": "서울특별시 마포구 양화로 160", "lat": 37.5571, "lng": 126.9236 },
-  { "placeId": "p3", "name": "서울역", "address": "서울특별시 용산구 한강대로 405", "lat": 37.5547, "lng": 126.9707 },
-  { "placeId": "p4", "name": "잠실역", "address": "서울특별시 송파구 올림픽로 지하 265", "lat": 37.5133, "lng": 127.1001 },
-  { "placeId": "p5", "name": "여의도역", "address": "서울특별시 영등포구 의사당대로 지하 166", "lat": 37.5216, "lng": 126.9243 },
-  { "placeId": "p6", "name": "명동역", "address": "서울특별시 중구 퇴계로 지하 126", "lat": 37.5609, "lng": 126.9860 },
-  { "placeId": "p7", "name": "신촌역", "address": "서울특별시 서대문구 신촌로 지하 90", "lat": 37.5553, "lng": 126.9366 },
-  { "placeId": "p8", "name": "건대입구역", "address": "서울특별시 광진구 아차산로 246", "lat": 37.5403, "lng": 127.0693 },
-  { "placeId": "p9", "name": "이태원역", "address": "서울특별시 용산구 이태원로 지하 180", "lat": 37.5345, "lng": 126.9946 },
-  { "placeId": "p10", "name": "합정역", "address": "서울특별시 마포구 양화로 지하 64", "lat": 37.5495, "lng": 126.9137 },
-  { "placeId": "p11", "name": "성수역", "address": "서울특별시 성동구 뚝섬로 지하 1", "lat": 37.5446, "lng": 127.0557 },
-  { "placeId": "p12", "name": "을지로3가역", "address": "서울특별시 중구 을지로 지하 156", "lat": 37.5660, "lng": 126.9920 }
+  {
+    "placeId": "p1",
+    "name": "강남역",
+    "address": "서울특별시 강남구 강남대로 396",
+    "lat": 37.4979,
+    "lng": 127.0276
+  },
+  {
+    "placeId": "p2",
+    "name": "홍대입구역",
+    "address": "서울특별시 마포구 양화로 160",
+    "lat": 37.5571,
+    "lng": 126.9236
+  },
+  {
+    "placeId": "p3",
+    "name": "서울역",
+    "address": "서울특별시 용산구 한강대로 405",
+    "lat": 37.5547,
+    "lng": 126.9707
+  },
+  {
+    "placeId": "p4",
+    "name": "잠실역",
+    "address": "서울특별시 송파구 올림픽로 지하 265",
+    "lat": 37.5133,
+    "lng": 127.1001
+  },
+  {
+    "placeId": "p5",
+    "name": "여의도역",
+    "address": "서울특별시 영등포구 의사당대로 지하 166",
+    "lat": 37.5216,
+    "lng": 126.9243
+  },
+  {
+    "placeId": "p6",
+    "name": "명동역",
+    "address": "서울특별시 중구 퇴계로 지하 126",
+    "lat": 37.5609,
+    "lng": 126.986
+  },
+  {
+    "placeId": "p7",
+    "name": "신촌역",
+    "address": "서울특별시 서대문구 신촌로 지하 90",
+    "lat": 37.5553,
+    "lng": 126.9366
+  },
+  {
+    "placeId": "p8",
+    "name": "건대입구역",
+    "address": "서울특별시 광진구 아차산로 246",
+    "lat": 37.5403,
+    "lng": 127.0693
+  },
+  {
+    "placeId": "p9",
+    "name": "이태원역",
+    "address": "서울특별시 용산구 이태원로 지하 180",
+    "lat": 37.5345,
+    "lng": 126.9946
+  },
+  {
+    "placeId": "p10",
+    "name": "합정역",
+    "address": "서울특별시 마포구 양화로 지하 64",
+    "lat": 37.5495,
+    "lng": 126.9137
+  },
+  {
+    "placeId": "p11",
+    "name": "성수역",
+    "address": "서울특별시 성동구 뚝섬로 지하 1",
+    "lat": 37.5446,
+    "lng": 127.0557
+  },
+  {
+    "placeId": "p12",
+    "name": "을지로3가역",
+    "address": "서울특별시 중구 을지로 지하 156",
+    "lat": 37.566,
+    "lng": 126.992
+  }
 ]
 ```
 
@@ -364,18 +448,102 @@ git commit -m "feat: 클립보드 유틸 추가 (navigator.clipboard + textarea 
 
 ```json
 [
-  { "id": "n1", "name": "스타벅스 시청점", "category": "cafe", "lat": 37.5660, "lng": 126.9784, "distance": 120 },
-  { "id": "n2", "name": "투썸플레이스 광화문점", "category": "cafe", "lat": 37.5710, "lng": 126.9769, "distance": 350 },
-  { "id": "n3", "name": "블루보틀 삼청점", "category": "cafe", "lat": 37.5820, "lng": 126.9832, "distance": 800 },
-  { "id": "n4", "name": "을지로 골목식당", "category": "restaurant", "lat": 37.5660, "lng": 126.9910, "distance": 200 },
-  { "id": "n5", "name": "광화문 국밥집", "category": "restaurant", "lat": 37.5720, "lng": 126.9760, "distance": 400 },
-  { "id": "n6", "name": "명동 칼국수", "category": "restaurant", "lat": 37.5610, "lng": 126.9855, "distance": 550 },
-  { "id": "n7", "name": "종로3가 부대찌개", "category": "restaurant", "lat": 37.5710, "lng": 126.9920, "distance": 650 },
-  { "id": "n8", "name": "시청역 1호선", "category": "subway", "lat": 37.5657, "lng": 126.9773, "distance": 80 },
-  { "id": "n9", "name": "을지로입구역 2호선", "category": "subway", "lat": 37.5660, "lng": 126.9825, "distance": 250 },
-  { "id": "n10", "name": "광화문역 5호선", "category": "subway", "lat": 37.5710, "lng": 126.9768, "distance": 380 },
-  { "id": "n11", "name": "종각역 1호선", "category": "subway", "lat": 37.5700, "lng": 126.9831, "distance": 450 },
-  { "id": "n12", "name": "안국역 3호선", "category": "subway", "lat": 37.5764, "lng": 126.9854, "distance": 620 }
+  {
+    "id": "n1",
+    "name": "스타벅스 시청점",
+    "category": "cafe",
+    "lat": 37.566,
+    "lng": 126.9784,
+    "distance": 120
+  },
+  {
+    "id": "n2",
+    "name": "투썸플레이스 광화문점",
+    "category": "cafe",
+    "lat": 37.571,
+    "lng": 126.9769,
+    "distance": 350
+  },
+  {
+    "id": "n3",
+    "name": "블루보틀 삼청점",
+    "category": "cafe",
+    "lat": 37.582,
+    "lng": 126.9832,
+    "distance": 800
+  },
+  {
+    "id": "n4",
+    "name": "을지로 골목식당",
+    "category": "restaurant",
+    "lat": 37.566,
+    "lng": 126.991,
+    "distance": 200
+  },
+  {
+    "id": "n5",
+    "name": "광화문 국밥집",
+    "category": "restaurant",
+    "lat": 37.572,
+    "lng": 126.976,
+    "distance": 400
+  },
+  {
+    "id": "n6",
+    "name": "명동 칼국수",
+    "category": "restaurant",
+    "lat": 37.561,
+    "lng": 126.9855,
+    "distance": 550
+  },
+  {
+    "id": "n7",
+    "name": "종로3가 부대찌개",
+    "category": "restaurant",
+    "lat": 37.571,
+    "lng": 126.992,
+    "distance": 650
+  },
+  {
+    "id": "n8",
+    "name": "시청역 1호선",
+    "category": "subway",
+    "lat": 37.5657,
+    "lng": 126.9773,
+    "distance": 80
+  },
+  {
+    "id": "n9",
+    "name": "을지로입구역 2호선",
+    "category": "subway",
+    "lat": 37.566,
+    "lng": 126.9825,
+    "distance": 250
+  },
+  {
+    "id": "n10",
+    "name": "광화문역 5호선",
+    "category": "subway",
+    "lat": 37.571,
+    "lng": 126.9768,
+    "distance": 380
+  },
+  {
+    "id": "n11",
+    "name": "종각역 1호선",
+    "category": "subway",
+    "lat": 37.57,
+    "lng": 126.9831,
+    "distance": 450
+  },
+  {
+    "id": "n12",
+    "name": "안국역 3호선",
+    "category": "subway",
+    "lat": 37.5764,
+    "lng": 126.9854,
+    "distance": 620
+  }
 ]
 ```
 
@@ -386,13 +554,13 @@ git commit -m "feat: 클립보드 유틸 추가 (navigator.clipboard + textarea 
   "distance": 12.5,
   "duration": "약 25분",
   "polyline": [
-    { "lat": 37.5665, "lng": 126.9780 },
-    { "lat": 37.5610, "lng": 126.9860 },
-    { "lat": 37.5547, "lng": 126.9920 },
-    { "lat": 37.5480, "lng": 127.0100 },
-    { "lat": 37.5350, "lng": 127.0150 },
-    { "lat": 37.5200, "lng": 127.0200 },
-    { "lat": 37.5050, "lng": 127.0250 },
+    { "lat": 37.5665, "lng": 126.978 },
+    { "lat": 37.561, "lng": 126.986 },
+    { "lat": 37.5547, "lng": 126.992 },
+    { "lat": 37.548, "lng": 127.01 },
+    { "lat": 37.535, "lng": 127.015 },
+    { "lat": 37.52, "lng": 127.02 },
+    { "lat": 37.505, "lng": 127.025 },
     { "lat": 37.4979, "lng": 127.0276 }
   ]
 }
@@ -410,6 +578,7 @@ git commit -m "feat: mock 데이터 추가 (places, nearby, directions)"
 ## Task 6: API 인터페이스 확장 + Mock 구현 + HTTP 껍데기
 
 **Files:**
+
 - Modify: `src/lib/api.interface.ts:1-11`
 - Modify: `src/lib/api.mock.ts:1-98`
 - Create: `src/lib/api.http.ts`
@@ -420,23 +589,47 @@ git commit -m "feat: mock 데이터 추가 (places, nearby, directions)"
 ```typescript
 // src/lib/api.interface.ts
 import type {
-  Room, Marker, MarkerRequest, RoomResult, RoomType,
-  PlaceResult, NearbyPlace, DirectionsResult, LatLng,
-} from '@/types';
+  Room,
+  Marker,
+  MarkerRequest,
+  RoomResult,
+  RoomType,
+  PlaceResult,
+  NearbyPlace,
+  DirectionsResult,
+  LatLng,
+} from "@/types";
 
 export interface ApiClient {
-  createRoom(name: string, type: RoomType, dates?: string[], password?: string): Promise<Room>;
+  createRoom(
+    name: string,
+    type: RoomType,
+    dates?: string[],
+    password?: string,
+  ): Promise<Room>;
   getRoom(roomId: string): Promise<Room>;
   verifyRoomPassword(roomId: string, password: string): Promise<boolean>;
-  verifyParticipant(roomId: string, nickname: string, password: string): Promise<Marker | null>;
+  verifyParticipant(
+    roomId: string,
+    nickname: string,
+    password: string,
+  ): Promise<Marker | null>;
   addMarker(roomId: string, req: MarkerRequest): Promise<Marker>;
   deleteMarker(roomId: string, markerId: string): Promise<void>;
   getResult(roomId: string): Promise<RoomResult | null>;
 
   // 지도 연동
   searchPlaces(query: string): Promise<PlaceResult[]>;
-  getNearbyPlaces(lat: number, lng: number, type?: string): Promise<NearbyPlace[]>;
-  getDirections(origin: LatLng, destination: LatLng, waypoints?: LatLng[]): Promise<DirectionsResult>;
+  getNearbyPlaces(
+    lat: number,
+    lng: number,
+    type?: string,
+  ): Promise<NearbyPlace[]>;
+  getDirections(
+    origin: LatLng,
+    destination: LatLng,
+    waypoints?: LatLng[],
+  ): Promise<DirectionsResult>;
   reverseGeocode(lat: number, lng: number): Promise<string>;
 }
 ```
@@ -447,14 +640,24 @@ export interface ApiClient {
 
 ```typescript
 // src/lib/api.mock.ts
-import type { Room, Marker, MarkerRequest, RoomResult, RoomType, PlaceResult, NearbyPlace, DirectionsResult, LatLng } from '@/types';
-import type { ApiClient } from './api.interface';
-import { haversine, centroid, solveTSP } from './geo';
-import placesData from '@/mock/places.json';
-import nearbyData from '@/mock/nearby.json';
-import directionsData from '@/mock/directions.json';
+import type {
+  Room,
+  Marker,
+  MarkerRequest,
+  RoomResult,
+  RoomType,
+  PlaceResult,
+  NearbyPlace,
+  DirectionsResult,
+  LatLng,
+} from "@/types";
+import type { ApiClient } from "./api.interface";
+import { haversine, centroid, solveTSP } from "./geo";
+import placesData from "@/mock/places.json";
+import nearbyData from "@/mock/nearby.json";
+import directionsData from "@/mock/directions.json";
 
-const STORAGE_KEY = 'moaplace_rooms';
+const STORAGE_KEY = "moaplace_rooms";
 
 const getRooms = (): Record<string, Room> => {
   const data = localStorage.getItem(STORAGE_KEY);
@@ -466,7 +669,7 @@ const saveRooms = (rooms: Record<string, Room>) => {
 };
 
 const assertRoom = (room: Room | undefined): Room => {
-  if (!room) throw new Error('방을 찾을 수 없어요');
+  if (!room) throw new Error("방을 찾을 수 없어요");
   return room;
 };
 
@@ -478,10 +681,15 @@ const mutateRooms = (fn: (rooms: Record<string, Room>) => void) => {
 };
 
 const mockApi: ApiClient = {
-  async createRoom(name: string, type: RoomType, dates?: string[], password?: string): Promise<Room> {
+  async createRoom(
+    name: string,
+    type: RoomType,
+    dates?: string[],
+    password?: string,
+  ): Promise<Room> {
     const room: Room = {
       id: crypto.randomUUID(),
-      name: name.trim() || '이름 없는 모임',
+      name: name.trim() || "이름 없는 모임",
       type,
       markers: [],
       dates,
@@ -506,12 +714,16 @@ const mockApi: ApiClient = {
     return room.password === password;
   },
 
-  async verifyParticipant(roomId: string, nickname: string, password: string): Promise<Marker | null> {
+  async verifyParticipant(
+    roomId: string,
+    nickname: string,
+    password: string,
+  ): Promise<Marker | null> {
     const rooms = getRooms();
     const room = assertRoom(rooms[roomId]);
     const marker = room.markers.find((m) => m.nickname === nickname);
     if (!marker) return null;
-    if (marker.password !== password) throw new Error('비밀번호가 틀려요');
+    if (marker.password !== password) throw new Error("비밀번호가 틀려요");
     return marker;
   },
 
@@ -563,22 +775,31 @@ const mockApi: ApiClient = {
     const q = query.toLowerCase().trim();
     if (!q) return [];
     return (placesData as PlaceResult[]).filter(
-      (p) => p.name.toLowerCase().includes(q) || p.address.toLowerCase().includes(q),
+      (p) =>
+        p.name.toLowerCase().includes(q) || p.address.toLowerCase().includes(q),
     );
   },
 
-  async getNearbyPlaces(_lat: number, _lng: number, type?: string): Promise<NearbyPlace[]> {
+  async getNearbyPlaces(
+    _lat: number,
+    _lng: number,
+    type?: string,
+  ): Promise<NearbyPlace[]> {
     const data = nearbyData as NearbyPlace[];
-    if (!type || type === 'all') return data;
+    if (!type || type === "all") return data;
     return data.filter((p) => p.category === type);
   },
 
-  async getDirections(_origin: LatLng, _destination: LatLng, _waypoints?: LatLng[]): Promise<DirectionsResult> {
+  async getDirections(
+    _origin: LatLng,
+    _destination: LatLng,
+    _waypoints?: LatLng[],
+  ): Promise<DirectionsResult> {
     return directionsData as DirectionsResult;
   },
 
   async reverseGeocode(_lat: number, _lng: number): Promise<string> {
-    return '서울특별시 중구 세종대로 110';
+    return "서울특별시 중구 세종대로 110";
   },
 };
 
@@ -589,24 +810,24 @@ export default mockApi;
 
 ```typescript
 // src/lib/api.http.ts
-import type { ApiClient } from './api.interface';
+import type { ApiClient } from "./api.interface";
 
 const notImplemented = (method: string): never => {
   throw new Error(`HTTP API 미구현: ${method}`);
 };
 
 const httpApi: ApiClient = {
-  createRoom: () => notImplemented('createRoom'),
-  getRoom: () => notImplemented('getRoom'),
-  verifyRoomPassword: () => notImplemented('verifyRoomPassword'),
-  verifyParticipant: () => notImplemented('verifyParticipant'),
-  addMarker: () => notImplemented('addMarker'),
-  deleteMarker: () => notImplemented('deleteMarker'),
-  getResult: () => notImplemented('getResult'),
-  searchPlaces: () => notImplemented('searchPlaces'),
-  getNearbyPlaces: () => notImplemented('getNearbyPlaces'),
-  getDirections: () => notImplemented('getDirections'),
-  reverseGeocode: () => notImplemented('reverseGeocode'),
+  createRoom: () => notImplemented("createRoom"),
+  getRoom: () => notImplemented("getRoom"),
+  verifyRoomPassword: () => notImplemented("verifyRoomPassword"),
+  verifyParticipant: () => notImplemented("verifyParticipant"),
+  addMarker: () => notImplemented("addMarker"),
+  deleteMarker: () => notImplemented("deleteMarker"),
+  getResult: () => notImplemented("getResult"),
+  searchPlaces: () => notImplemented("searchPlaces"),
+  getNearbyPlaces: () => notImplemented("getNearbyPlaces"),
+  getDirections: () => notImplemented("getDirections"),
+  reverseGeocode: () => notImplemented("reverseGeocode"),
 };
 
 export default httpApi;
@@ -628,6 +849,7 @@ git commit -m "feat: API 인터페이스 확장 및 mock/http 어댑터 구현"
 ## Task 7: 커스텀 훅 구현 (6개)
 
 **Files:**
+
 - Create: `src/hooks/useGeocoding.ts`
 - Create: `src/hooks/useGeolocation.ts`
 - Create: `src/hooks/usePlaceSearch.ts`
@@ -639,8 +861,8 @@ git commit -m "feat: API 인터페이스 확장 및 mock/http 어댑터 구현"
 
 ```typescript
 // src/hooks/useGeocoding.ts
-import { useCallback, useState } from 'react';
-import api from '@/lib/api';
+import { useCallback, useState } from "react";
+import api from "@/lib/api";
 
 interface UseGeocodingReturn {
   address: string | null;
@@ -652,16 +874,19 @@ const useGeocoding = (): UseGeocodingReturn => {
   const [address, setAddress] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const reverseGeocode = useCallback(async (lat: number, lng: number): Promise<string> => {
-    setIsLoading(true);
-    try {
-      const result = await api.reverseGeocode(lat, lng);
-      setAddress(result);
-      return result;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const reverseGeocode = useCallback(
+    async (lat: number, lng: number): Promise<string> => {
+      setIsLoading(true);
+      try {
+        const result = await api.reverseGeocode(lat, lng);
+        setAddress(result);
+        return result;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
 
   return { address, isLoading, reverseGeocode };
 };
@@ -673,8 +898,8 @@ export default useGeocoding;
 
 ```typescript
 // src/hooks/useGeolocation.ts
-import { useCallback, useState } from 'react';
-import type { LatLng } from '@/types';
+import { useCallback, useState } from "react";
+import type { LatLng } from "@/types";
 
 interface UseGeolocationReturn {
   position: LatLng | null;
@@ -690,7 +915,7 @@ const useGeolocation = (): UseGeolocationReturn => {
 
   const getCurrentPosition = useCallback(() => {
     if (!navigator.geolocation) {
-      setError('이 브라우저에서는 위치 서비스를 지원하지 않아요');
+      setError("이 브라우저에서는 위치 서비스를 지원하지 않아요");
       return;
     }
 
@@ -704,11 +929,11 @@ const useGeolocation = (): UseGeolocationReturn => {
       },
       (err) => {
         const messages: Record<number, string> = {
-          1: '위치 권한을 허용해주세요',
-          2: '위치를 가져올 수 없어요',
-          3: '위치 요청이 시간 초과되었어요',
+          1: "위치 권한을 허용해주세요",
+          2: "위치를 가져올 수 없어요",
+          3: "위치 요청이 시간 초과되었어요",
         };
-        setError(messages[err.code] ?? '위치를 가져올 수 없어요');
+        setError(messages[err.code] ?? "위치를 가져올 수 없어요");
         setIsLoading(false);
       },
       { enableHighAccuracy: true, timeout: 10000 },
@@ -725,9 +950,9 @@ export default useGeolocation;
 
 ```typescript
 // src/hooks/usePlaceSearch.ts
-import { useCallback, useState } from 'react';
-import api from '@/lib/api';
-import type { PlaceResult } from '@/types';
+import { useCallback, useState } from "react";
+import api from "@/lib/api";
+import type { PlaceResult } from "@/types";
 
 interface UsePlaceSearchReturn {
   results: PlaceResult[];
@@ -766,30 +991,37 @@ export default usePlaceSearch;
 
 ```typescript
 // src/hooks/useDirections.ts
-import { useCallback, useState } from 'react';
-import api from '@/lib/api';
-import type { LatLng, DirectionsResult } from '@/types';
+import { useCallback, useState } from "react";
+import api from "@/lib/api";
+import type { LatLng, DirectionsResult } from "@/types";
 
 interface UseDirectionsReturn {
   route: DirectionsResult | null;
   isLoading: boolean;
-  getRoute: (origin: LatLng, destination: LatLng, waypoints?: LatLng[]) => Promise<DirectionsResult>;
+  getRoute: (
+    origin: LatLng,
+    destination: LatLng,
+    waypoints?: LatLng[],
+  ) => Promise<DirectionsResult>;
 }
 
 const useDirections = (): UseDirectionsReturn => {
   const [route, setRoute] = useState<DirectionsResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const getRoute = useCallback(async (origin: LatLng, destination: LatLng, waypoints?: LatLng[]) => {
-    setIsLoading(true);
-    try {
-      const result = await api.getDirections(origin, destination, waypoints);
-      setRoute(result);
-      return result;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const getRoute = useCallback(
+    async (origin: LatLng, destination: LatLng, waypoints?: LatLng[]) => {
+      setIsLoading(true);
+      try {
+        const result = await api.getDirections(origin, destination, waypoints);
+        setRoute(result);
+        return result;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [],
+  );
 
   return { route, isLoading, getRoute };
 };
@@ -801,11 +1033,11 @@ export default useDirections;
 
 ```typescript
 // src/hooks/usePWA.ts
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
 interface UsePWAReturn {
@@ -825,15 +1057,15 @@ const usePWA = (): UsePWAReturn => {
       setCanInstall(true);
     };
 
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 
   const install = useCallback(async () => {
     if (!deferredPrompt.current) return;
     await deferredPrompt.current.prompt();
     const { outcome } = await deferredPrompt.current.userChoice;
-    if (outcome === 'accepted') {
+    if (outcome === "accepted") {
       setCanInstall(false);
     }
     deferredPrompt.current = null;
@@ -854,8 +1086,8 @@ export default usePWA;
 
 ```typescript
 // src/hooks/useRoom.ts
-import { useEffect } from 'react';
-import { useRoomStore } from '@/store/roomStore';
+import { useEffect } from "react";
+import { useRoomStore } from "@/store/roomStore";
 
 const useRoom = (roomId: string | undefined) => {
   const fetchRoom = useRoomStore((s) => s.fetchRoom);
@@ -882,6 +1114,7 @@ git commit -m "feat: 커스텀 훅 추가 (useGeocoding, useGeolocation, usePlac
 ## Task 8: App.tsx에 APIProvider 래핑
 
 **Files:**
+
 - Modify: `src/App.tsx:1-23`
 
 **Step 1: APIProvider 추가**
@@ -928,6 +1161,7 @@ git commit -m "feat: App.tsx에 Google Maps APIProvider 래핑"
 ## Task 9: MapView + GoogleMarker + RoutePolyline 컴포넌트
 
 **Files:**
+
 - Create: `src/components/Map/MapView.tsx`
 - Create: `src/components/Map/GoogleMarker.tsx`
 - Create: `src/components/Map/RoutePolyline.tsx`
@@ -938,13 +1172,13 @@ git commit -m "feat: App.tsx에 Google Maps APIProvider 래핑"
 
 ```tsx
 // src/components/Map/MapView.tsx
-import { useCallback } from 'react';
-import { Map, MapMouseEvent } from '@vis.gl/react-google-maps';
+import { useCallback } from "react";
+import { Map, MapMouseEvent } from "@vis.gl/react-google-maps";
 
-import GoogleMarker from '@/components/Map/GoogleMarker';
-import RoutePolyline from '@/components/Map/RoutePolyline';
-import { cn } from '@/lib/utils';
-import type { Marker, RoomResult } from '@/types';
+import GoogleMarker from "@/components/Map/GoogleMarker";
+import RoutePolyline from "@/components/Map/RoutePolyline";
+import { cn } from "@/lib/utils";
+import type { Marker, RoomResult } from "@/types";
 
 interface MapViewProps {
   markers: Marker[];
@@ -954,18 +1188,27 @@ interface MapViewProps {
   className?: string;
 }
 
-const SEOUL_CENTER = { lat: 37.5665, lng: 126.9780 };
+const SEOUL_CENTER = { lat: 37.5665, lng: 126.978 };
 
-const MapView = ({ markers, myNickname, result, onMapClick, className }: MapViewProps) => {
-  const handleClick = useCallback((e: MapMouseEvent) => {
-    const pos = e.detail.latLng;
-    if (pos) {
-      onMapClick(pos.lat, pos.lng);
-    }
-  }, [onMapClick]);
+const MapView = ({
+  markers,
+  myNickname,
+  result,
+  onMapClick,
+  className,
+}: MapViewProps) => {
+  const handleClick = useCallback(
+    (e: MapMouseEvent) => {
+      const pos = e.detail.latLng;
+      if (pos) {
+        onMapClick(pos.lat, pos.lng);
+      }
+    },
+    [onMapClick],
+  );
 
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn("relative", className)}>
       <Map
         defaultCenter={SEOUL_CENTER}
         defaultZoom={12}
@@ -978,7 +1221,7 @@ const MapView = ({ markers, myNickname, result, onMapClick, className }: MapView
         {markers.map((marker) => (
           <GoogleMarker
             key={marker.id}
-            type={marker.nickname === myNickname ? 'mine' : 'others'}
+            type={marker.nickname === myNickname ? "mine" : "others"}
             position={{ lat: marker.lat, lng: marker.lng }}
             nickname={marker.nickname}
           />
@@ -992,7 +1235,9 @@ const MapView = ({ markers, myNickname, result, onMapClick, className }: MapView
         )}
 
         {result?.route && result.route.path.length > 1 && (
-          <RoutePolyline path={result.route.path.map((m) => ({ lat: m.lat, lng: m.lng }))} />
+          <RoutePolyline
+            path={result.route.path.map((m) => ({ lat: m.lat, lng: m.lng }))}
+          />
         )}
       </Map>
     </div>
@@ -1006,14 +1251,14 @@ export default MapView;
 
 ```tsx
 // src/components/Map/GoogleMarker.tsx
-import { AdvancedMarker } from '@vis.gl/react-google-maps';
+import { AdvancedMarker } from "@vis.gl/react-google-maps";
 
-import MapPin from '@/components/Map/MapPin';
-import PulseMarker from '@/components/Map/PulseMarker';
-import type { LatLng } from '@/types';
+import MapPin from "@/components/Map/MapPin";
+import PulseMarker from "@/components/Map/PulseMarker";
+import type { LatLng } from "@/types";
 
 interface GoogleMarkerProps {
-  type: 'mine' | 'others' | 'center';
+  type: "mine" | "others" | "center";
   position: LatLng;
   nickname?: string;
 }
@@ -1021,7 +1266,7 @@ interface GoogleMarkerProps {
 const GoogleMarker = ({ type, position, nickname }: GoogleMarkerProps) => {
   return (
     <AdvancedMarker position={position}>
-      {type === 'center' ? (
+      {type === "center" ? (
         <PulseMarker color="center" size="lg" label="중간지점" />
       ) : (
         <MapPin type={type} nickname={nickname} />
@@ -1037,11 +1282,11 @@ export default GoogleMarker;
 
 ```tsx
 // src/components/Map/RoutePolyline.tsx
-import { useEffect, useRef } from 'react';
-import { useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
+import { useEffect, useRef } from "react";
+import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 
-import { AppColors } from '@/constants/colors';
-import type { LatLng } from '@/types';
+import { AppColors } from "@/constants/colors";
+import type { LatLng } from "@/types";
 
 interface RoutePolylineProps {
   path: LatLng[];
@@ -1049,7 +1294,7 @@ interface RoutePolylineProps {
 
 const RoutePolyline = ({ path }: RoutePolylineProps) => {
   const map = useMap();
-  const mapsLib = useMapsLibrary('maps');
+  const mapsLib = useMapsLibrary("maps");
   const polylineRef = useRef<google.maps.Polyline | null>(null);
 
   useEffect(() => {
@@ -1094,6 +1339,7 @@ git commit -m "feat: Google Maps 지도 컴포넌트 구현 (MapView, GoogleMark
 ## Task 10: PlaceSearchBar + NearbyPlaceList 컴포넌트
 
 **Files:**
+
 - Create: `src/components/Map/PlaceSearchBar.tsx`
 - Create: `src/components/Map/NearbyPlaceList.tsx`
 
@@ -1101,13 +1347,13 @@ git commit -m "feat: Google Maps 지도 컴포넌트 구현 (MapView, GoogleMark
 
 ```tsx
 // src/components/Map/PlaceSearchBar.tsx
-import { useCallback, useRef, useState } from 'react';
-import { Search, X } from 'lucide-react';
+import { useCallback, useRef, useState } from "react";
+import { Search, X } from "lucide-react";
 
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import usePlaceSearch from '@/hooks/usePlaceSearch';
-import type { PlaceResult } from '@/types';
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import usePlaceSearch from "@/hooks/usePlaceSearch";
+import type { PlaceResult } from "@/types";
 
 interface PlaceSearchBarProps {
   onPlaceSelect: (place: PlaceResult) => void;
@@ -1115,40 +1361,46 @@ interface PlaceSearchBarProps {
 }
 
 const PlaceSearchBar = ({ onPlaceSelect, className }: PlaceSearchBarProps) => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const { results, search, clear } = usePlaceSearch();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const handleChange = useCallback((value: string) => {
-    setQuery(value);
-    clearTimeout(debounceRef.current);
-    if (!value.trim()) {
-      clear();
-      setIsOpen(false);
-      return;
-    }
-    debounceRef.current = setTimeout(() => {
-      search(value);
-      setIsOpen(true);
-    }, 300);
-  }, [search, clear]);
+  const handleChange = useCallback(
+    (value: string) => {
+      setQuery(value);
+      clearTimeout(debounceRef.current);
+      if (!value.trim()) {
+        clear();
+        setIsOpen(false);
+        return;
+      }
+      debounceRef.current = setTimeout(() => {
+        search(value);
+        setIsOpen(true);
+      }, 300);
+    },
+    [search, clear],
+  );
 
-  const handleSelect = useCallback((place: PlaceResult) => {
-    onPlaceSelect(place);
-    setQuery(place.name);
-    setIsOpen(false);
-    clear();
-  }, [onPlaceSelect, clear]);
+  const handleSelect = useCallback(
+    (place: PlaceResult) => {
+      onPlaceSelect(place);
+      setQuery(place.name);
+      setIsOpen(false);
+      clear();
+    },
+    [onPlaceSelect, clear],
+  );
 
   const handleClear = useCallback(() => {
-    setQuery('');
+    setQuery("");
     clear();
     setIsOpen(false);
   }, [clear]);
 
   return (
-    <div className={cn('relative w-full max-w-sm', className)}>
+    <div className={cn("relative w-full max-w-sm", className)}>
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-black-400" />
         <Input
@@ -1175,7 +1427,9 @@ const PlaceSearchBar = ({ onPlaceSelect, className }: PlaceSearchBarProps) => {
                 onClick={() => handleSelect(place)}
                 className="flex flex-col gap-0.5 w-full px-4 py-3 text-left hover:bg-black-100 transition-colors"
               >
-                <span className="text-sm font-pretendard-md text-black-800">{place.name}</span>
+                <span className="text-sm font-pretendard-md text-black-800">
+                  {place.name}
+                </span>
                 <span className="text-xs text-black-400">{place.address}</span>
               </button>
             </li>
@@ -1193,12 +1447,12 @@ export default PlaceSearchBar;
 
 ```tsx
 // src/components/Map/NearbyPlaceList.tsx
-import { useCallback, useEffect, useState } from 'react';
-import { Coffee, MapPin, Train, UtensilsCrossed } from 'lucide-react';
+import { useCallback, useEffect, useState } from "react";
+import { Coffee, MapPin, Train, UtensilsCrossed } from "lucide-react";
 
-import { cn } from '@/lib/utils';
-import api from '@/lib/api';
-import type { NearbyPlace } from '@/types';
+import { cn } from "@/lib/utils";
+import api from "@/lib/api";
+import type { NearbyPlace } from "@/types";
 
 interface NearbyPlaceListProps {
   lat: number;
@@ -1207,20 +1461,23 @@ interface NearbyPlaceListProps {
 }
 
 const CATEGORIES = [
-  { key: 'all', label: '전체', icon: MapPin },
-  { key: 'restaurant', label: '식당', icon: UtensilsCrossed },
-  { key: 'cafe', label: '카페', icon: Coffee },
-  { key: 'subway', label: '지하철', icon: Train },
+  { key: "all", label: "전체", icon: MapPin },
+  { key: "restaurant", label: "식당", icon: UtensilsCrossed },
+  { key: "cafe", label: "카페", icon: Coffee },
+  { key: "subway", label: "지하철", icon: Train },
 ] as const;
 
 const NearbyPlaceList = ({ lat, lng, className }: NearbyPlaceListProps) => {
   const [places, setPlaces] = useState<NearbyPlace[]>([]);
-  const [category, setCategory] = useState<string>('all');
+  const [category, setCategory] = useState<string>("all");
 
-  const fetchPlaces = useCallback(async (type: string) => {
-    const data = await api.getNearbyPlaces(lat, lng, type);
-    setPlaces(data);
-  }, [lat, lng]);
+  const fetchPlaces = useCallback(
+    async (type: string) => {
+      const data = await api.getNearbyPlaces(lat, lng, type);
+      setPlaces(data);
+    },
+    [lat, lng],
+  );
 
   useEffect(() => {
     fetchPlaces(category);
@@ -1231,8 +1488,10 @@ const NearbyPlaceList = ({ lat, lng, className }: NearbyPlaceListProps) => {
   }, []);
 
   return (
-    <div className={cn('flex flex-col gap-3', className)}>
-      <h3 className="text-sm font-pretendard-sb text-black-800">주변 시설 추천</h3>
+    <div className={cn("flex flex-col gap-3", className)}>
+      <h3 className="text-sm font-pretendard-sb text-black-800">
+        주변 시설 추천
+      </h3>
 
       {/* 카테고리 탭 */}
       <div className="flex gap-2">
@@ -1241,10 +1500,10 @@ const NearbyPlaceList = ({ lat, lng, className }: NearbyPlaceListProps) => {
             key={key}
             onClick={() => handleCategoryChange(key)}
             className={cn(
-              'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-pretendard-md transition-colors',
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-pretendard-md transition-colors",
               category === key
-                ? 'bg-primary text-white'
-                : 'bg-black-100 text-black-600 hover:bg-black-300/50',
+                ? "bg-primary text-white"
+                : "bg-black-100 text-black-600 hover:bg-black-300/50",
             )}
           >
             <Icon className="size-3.5" />
@@ -1267,9 +1526,13 @@ const NearbyPlaceList = ({ lat, lng, className }: NearbyPlaceListProps) => {
                 <Icon className="size-4 text-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-pretendard-md text-black-800 truncate">{place.name}</p>
+                <p className="text-sm font-pretendard-md text-black-800 truncate">
+                  {place.name}
+                </p>
               </div>
-              <span className="text-xs text-black-400 shrink-0">{place.distance}m</span>
+              <span className="text-xs text-black-400 shrink-0">
+                {place.distance}m
+              </span>
             </li>
           );
         })}
@@ -1293,6 +1556,7 @@ git commit -m "feat: PlaceSearchBar + NearbyPlaceList 컴포넌트 추가"
 ## Task 11: uiStore 변경 (PendingLocation 타입)
 
 **Files:**
+
 - Modify: `src/store/uiStore.ts:5-8`
 
 **Step 1: PendingLocation을 lat/lng 기반으로 변경**
@@ -1318,16 +1582,17 @@ git commit -m "refactor: PendingLocation 타입을 lat/lng 기반으로 변경"
 ## Task 12: LocationConfirmSheet 업데이트 (역지오코딩 주소 표시)
 
 **Files:**
+
 - Modify: `src/components/Panel/LocationConfirmSheet.tsx:1-53`
 
 **Step 1: LocationConfirmSheet를 lat/lng + 주소 표시로 변경**
 
 ```tsx
 // src/components/Panel/LocationConfirmSheet.tsx
-import { useEffect } from 'react';
-import { MapPin } from 'lucide-react';
+import { useEffect } from "react";
+import { MapPin } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
   DrawerContent,
@@ -1335,8 +1600,8 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from '@/components/ui/drawer';
-import useGeocoding from '@/hooks/useGeocoding';
+} from "@/components/ui/drawer";
+import useGeocoding from "@/hooks/useGeocoding";
 
 interface LocationConfirmSheetProps {
   open: boolean;
@@ -1366,18 +1631,24 @@ const LocationConfirmSheet = ({
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-sub" />
-            이 위치로 등록할까요?
+            <MapPin className="w-5 h-5 text-sub" />이 위치로 등록할까요?
           </DrawerTitle>
           <DrawerDescription>
-            {isLoading ? '주소를 찾고 있어요...' : address ?? `(${lat.toFixed(4)}, ${lng.toFixed(4)})`}
+            {isLoading
+              ? "주소를 찾고 있어요..."
+              : (address ?? `(${lat.toFixed(4)}, ${lng.toFixed(4)})`)}
           </DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
           <Button onClick={onConfirm} size="lg" className="w-full">
             여기로 확정!
           </Button>
-          <Button onClick={onCancel} variant="outline" size="lg" className="w-full">
+          <Button
+            onClick={onCancel}
+            variant="outline"
+            size="lg"
+            className="w-full"
+          >
             취소
           </Button>
         </DrawerFooter>
@@ -1401,27 +1672,28 @@ git commit -m "feat: LocationConfirmSheet에 역지오코딩 주소 표시"
 ## Task 13: ResultPanel 확장 (거리, 경로, 주변 시설)
 
 **Files:**
+
 - Modify: `src/components/Panel/ResultPanel.tsx:1-67`
 
 **Step 1: ResultPanel에 RoomResult + NearbyPlaceList 통합**
 
 ```tsx
 // src/components/Panel/ResultPanel.tsx
-import { memo } from 'react';
-import { ChevronUp, Route } from 'lucide-react';
+import { memo } from "react";
+import { ChevronUp, Route } from "lucide-react";
 
-import NearbyPlaceList from '@/components/Map/NearbyPlaceList';
-import PulseMarker from '@/components/Map/PulseMarker';
-import ParticipantList from '@/components/Panel/ParticipantList';
+import NearbyPlaceList from "@/components/Map/NearbyPlaceList";
+import PulseMarker from "@/components/Map/PulseMarker";
+import ParticipantList from "@/components/Panel/ParticipantList";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from '@/components/ui/drawer';
-import { Separator } from '@/components/ui/separator';
-import type { Marker, RoomResult } from '@/types';
+} from "@/components/ui/drawer";
+import { Separator } from "@/components/ui/separator";
+import type { Marker, RoomResult } from "@/types";
 
 interface ResultPanelProps {
   markers: Marker[];
@@ -1429,87 +1701,106 @@ interface ResultPanelProps {
   result: RoomResult | null;
 }
 
-const ResultPanel = memo(({ markers, myNickname, result }: ResultPanelProps) => {
-  if (markers.length === 0) return null;
+const ResultPanel = memo(
+  ({ markers, myNickname, result }: ResultPanelProps) => {
+    if (markers.length === 0) return null;
 
-  return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <button className="flex items-center justify-center gap-2 w-full py-3 text-sm font-pretendard-md text-black-600 hover:text-black-800 transition-colors">
-          <ChevronUp className="w-4 h-4" />
-          참여자 {markers.length}명 · 결과 보기
-        </button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>모임 결과</DrawerTitle>
-        </DrawerHeader>
-        <div className="px-4 pb-6 flex flex-col gap-4 max-h-[60vh] overflow-y-auto">
-          {/* 중심점 정보 */}
-          {result?.centroid && (
-            <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-center-100 border border-center/20">
-              <PulseMarker color="center" size="sm" />
-              <div>
-                <p className="text-sm font-pretendard-sb text-center-600">
-                  모두의 중간지점
-                </p>
-                <p className="text-xs text-black-600">
-                  {result.centroid.address ?? `(${result.centroid.lat.toFixed(4)}, ${result.centroid.lng.toFixed(4)})`}
-                </p>
+    return (
+      <Drawer>
+        <DrawerTrigger asChild>
+          <button className="flex items-center justify-center gap-2 w-full py-3 text-sm font-pretendard-md text-black-600 hover:text-black-800 transition-colors">
+            <ChevronUp className="w-4 h-4" />
+            참여자 {markers.length}명 · 결과 보기
+          </button>
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>모임 결과</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-6 flex flex-col gap-4 max-h-[60vh] overflow-y-auto">
+            {/* 중심점 정보 */}
+            {result?.centroid && (
+              <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-center-100 border border-center/20">
+                <PulseMarker color="center" size="sm" />
+                <div>
+                  <p className="text-sm font-pretendard-sb text-center-600">
+                    모두의 중간지점
+                  </p>
+                  <p className="text-xs text-black-600">
+                    {result.centroid.address ??
+                      `(${result.centroid.lat.toFixed(4)}, ${result.centroid.lng.toFixed(4)})`}
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* TSP 경로 요약 */}
-          {result?.route && result.route.totalDistance > 0 && (
-            <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-primary-100 border border-primary/20">
-              <Route className="size-5 text-primary" />
-              <div>
-                <p className="text-sm font-pretendard-sb text-primary">최단 경로</p>
-                <p className="text-xs text-black-600">
-                  총 {result.route.totalDistance.toFixed(1)}km
-                </p>
+            {/* TSP 경로 요약 */}
+            {result?.route && result.route.totalDistance > 0 && (
+              <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-primary-100 border border-primary/20">
+                <Route className="size-5 text-primary" />
+                <div>
+                  <p className="text-sm font-pretendard-sb text-primary">
+                    최단 경로
+                  </p>
+                  <p className="text-xs text-black-600">
+                    총 {result.route.totalDistance.toFixed(1)}km
+                  </p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* 참여자별 거리 */}
-          {result?.distances && result.distances.length > 0 && (
+            {/* 참여자별 거리 */}
+            {result?.distances && result.distances.length > 0 && (
+              <div>
+                <h3 className="text-sm font-pretendard-sb text-black-800 mb-2">
+                  중심점까지 거리
+                </h3>
+                <ul className="flex flex-col gap-1.5">
+                  {result.distances.map((d) => (
+                    <li
+                      key={d.markerId}
+                      className="flex items-center justify-between px-3 py-2 rounded-lg bg-black-100/50"
+                    >
+                      <span className="text-sm text-black-800">
+                        {d.nickname}
+                      </span>
+                      <span className="text-xs text-black-400">
+                        {d.distance.toFixed(1)}km
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <Separator />
+
+            {/* 참여자 목록 */}
             <div>
-              <h3 className="text-sm font-pretendard-sb text-black-800 mb-2">중심점까지 거리</h3>
-              <ul className="flex flex-col gap-1.5">
-                {result.distances.map((d) => (
-                  <li key={d.markerId} className="flex items-center justify-between px-3 py-2 rounded-lg bg-black-100/50">
-                    <span className="text-sm text-black-800">{d.nickname}</span>
-                    <span className="text-xs text-black-400">{d.distance.toFixed(1)}km</span>
-                  </li>
-                ))}
-              </ul>
+              <h3 className="text-sm font-pretendard-sb text-black-800 mb-2">
+                참여자
+              </h3>
+              <ParticipantList markers={markers} myNickname={myNickname} />
             </div>
-          )}
 
-          <Separator />
-
-          {/* 참여자 목록 */}
-          <div>
-            <h3 className="text-sm font-pretendard-sb text-black-800 mb-2">참여자</h3>
-            <ParticipantList markers={markers} myNickname={myNickname} />
+            {/* 주변 시설 추천 */}
+            {result?.centroid && (
+              <>
+                <Separator />
+                <NearbyPlaceList
+                  lat={result.centroid.lat}
+                  lng={result.centroid.lng}
+                />
+              </>
+            )}
           </div>
+        </DrawerContent>
+      </Drawer>
+    );
+  },
+);
 
-          {/* 주변 시설 추천 */}
-          {result?.centroid && (
-            <>
-              <Separator />
-              <NearbyPlaceList lat={result.centroid.lat} lng={result.centroid.lng} />
-            </>
-          )}
-        </div>
-      </DrawerContent>
-    </Drawer>
-  );
-});
-
-ResultPanel.displayName = 'ResultPanel';
+ResultPanel.displayName = "ResultPanel";
 
 export default ResultPanel;
 ```
@@ -1526,6 +1817,7 @@ git commit -m "feat: ResultPanel 확장 (거리, 경로, 주변 시설 추가)"
 ## Task 14: RoomPage 통합 (모든 기능 연결)
 
 **Files:**
+
 - Modify: `src/pages/RoomPage.tsx:1-248`
 
 **Step 1: RoomPage 전면 교체**
@@ -1534,26 +1826,26 @@ MockMapView → MapView, 좌표 체계 lat/lng 전환, useGeolocation + usePWA +
 
 ```tsx
 // src/pages/RoomPage.tsx
-import { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { toast } from 'sonner';
+import { useCallback, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { toast } from "sonner";
 
-import EntryGate from '@/components/Panel/EntryGate';
-import MapActionBar from '@/components/Map/MapActionBar';
-import MapView from '@/components/Map/MapView';
-import PlaceSearchBar from '@/components/Map/PlaceSearchBar';
-import LocationConfirmSheet from '@/components/Panel/LocationConfirmSheet';
-import ParticipantList from '@/components/Panel/ParticipantList';
-import ProfileSheet from '@/components/Panel/ProfileSheet';
-import ResultPanel from '@/components/Panel/ResultPanel';
-import RoomHeader from '@/components/Panel/RoomHeader';
-import PWAInstallBanner from '@/components/common/PWAInstallBanner';
-import useGeolocation from '@/hooks/useGeolocation';
-import usePWA from '@/hooks/usePWA';
-import { copyToClipboard } from '@/lib/clipboard';
-import { useRoomStore } from '@/store/roomStore';
-import { useUIStore } from '@/store/uiStore';
-import type { PlaceResult } from '@/types';
+import EntryGate from "@/components/Panel/EntryGate";
+import MapActionBar from "@/components/Map/MapActionBar";
+import MapView from "@/components/Map/MapView";
+import PlaceSearchBar from "@/components/Map/PlaceSearchBar";
+import LocationConfirmSheet from "@/components/Panel/LocationConfirmSheet";
+import ParticipantList from "@/components/Panel/ParticipantList";
+import ProfileSheet from "@/components/Panel/ProfileSheet";
+import ResultPanel from "@/components/Panel/ResultPanel";
+import RoomHeader from "@/components/Panel/RoomHeader";
+import PWAInstallBanner from "@/components/common/PWAInstallBanner";
+import useGeolocation from "@/hooks/useGeolocation";
+import usePWA from "@/hooks/usePWA";
+import { copyToClipboard } from "@/lib/clipboard";
+import { useRoomStore } from "@/store/roomStore";
+import { useUIStore } from "@/store/uiStore";
+import type { PlaceResult } from "@/types";
 
 const RoomPage = () => {
   const { roomId } = useParams<{ roomId: string }>();
@@ -1592,11 +1884,11 @@ const RoomPage = () => {
 
   // 방 로드 완료 시 입장 단계 시작
   useEffect(() => {
-    if (room && entryStep === 'idle') {
+    if (room && entryStep === "idle") {
       if (room.password) {
-        setEntryStep('room_password');
+        setEntryStep("room_password");
       } else {
-        setEntryStep('done');
+        setEntryStep("done");
       }
     }
   }, [room, entryStep, setEntryStep]);
@@ -1610,51 +1902,67 @@ const RoomPage = () => {
   }, [gpsPosition, pendingLocation, setPendingLocation, openLocationSheet]);
 
   // --- Entry handlers ---
-  const handleRoomPasswordVerify = useCallback(async (password: string) => {
-    try {
-      const ok = await verifyRoomPassword(password);
-      if (ok) {
-        setEntryStep('done');
+  const handleRoomPasswordVerify = useCallback(
+    async (password: string) => {
+      try {
+        const ok = await verifyRoomPassword(password);
+        if (ok) {
+          setEntryStep("done");
+        }
+        return ok;
+      } catch {
+        toast.error("비밀번호 확인에 실패했어요");
+        return false;
       }
-      return ok;
-    } catch {
-      toast.error('비밀번호 확인에 실패했어요');
-      return false;
-    }
-  }, [verifyRoomPassword, setEntryStep]);
+    },
+    [verifyRoomPassword, setEntryStep],
+  );
 
   const needsProfile = !nickname || !participantPassword;
 
-  const handleProfileSubmit = useCallback(async (name: string, pw: string) => {
-    try {
-      const existing = await verifyParticipant(name, pw);
-      setNickname(name);
-      setParticipantPassword(pw);
-      setIsProfileSheetOpen(false);
-      if (existing) {
-        toast.success(`${name}님, 다시 오셨네요!`);
-      } else {
-        toast.success('이제 지도를 탭해서 위치를 찍어주세요!');
+  const handleProfileSubmit = useCallback(
+    async (name: string, pw: string) => {
+      try {
+        const existing = await verifyParticipant(name, pw);
+        setNickname(name);
+        setParticipantPassword(pw);
+        setIsProfileSheetOpen(false);
+        if (existing) {
+          toast.success(`${name}님, 다시 오셨네요!`);
+        } else {
+          toast.success("이제 지도를 탭해서 위치를 찍어주세요!");
+        }
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "참여에 실패했어요";
+        toast.error(message);
+        throw err;
       }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : '참여에 실패했어요';
-      toast.error(message);
-      throw err;
-    }
-  }, [verifyParticipant, setNickname, setParticipantPassword]);
+    },
+    [verifyParticipant, setNickname, setParticipantPassword],
+  );
 
   // --- Map handlers ---
-  const handleMapClick = useCallback((lat: number, lng: number) => {
-    if (needsProfile) {
-      setIsProfileSheetOpen(true);
-      return;
-    }
-    const hasMyMarker = room?.markers.some((m) => m.nickname === nickname);
-    if (hasMyMarker) return;
+  const handleMapClick = useCallback(
+    (lat: number, lng: number) => {
+      if (needsProfile) {
+        setIsProfileSheetOpen(true);
+        return;
+      }
+      const hasMyMarker = room?.markers.some((m) => m.nickname === nickname);
+      if (hasMyMarker) return;
 
-    setPendingLocation({ lat, lng });
-    openLocationSheet();
-  }, [needsProfile, room?.markers, nickname, setPendingLocation, openLocationSheet]);
+      setPendingLocation({ lat, lng });
+      openLocationSheet();
+    },
+    [
+      needsProfile,
+      room?.markers,
+      nickname,
+      setPendingLocation,
+      openLocationSheet,
+    ],
+  );
 
   const handleLocationConfirm = useCallback(async () => {
     if (!pendingLocation) return;
@@ -1665,23 +1973,29 @@ const RoomPage = () => {
       password: participantPassword,
     });
     closeLocationSheet();
-    toast.success('위치가 등록되었어요!');
-  }, [pendingLocation, nickname, participantPassword, addMarker, closeLocationSheet]);
+    toast.success("위치가 등록되었어요!");
+  }, [
+    pendingLocation,
+    nickname,
+    participantPassword,
+    addMarker,
+    closeLocationSheet,
+  ]);
 
   const handleRelocate = useCallback(async () => {
     const myMarker = room?.markers.find((m) => m.nickname === nickname);
     if (myMarker) {
       await deleteMarker(myMarker.id);
-      toast.info('기존 위치를 삭제했어요. 새 위치를 찍어주세요');
+      toast.info("기존 위치를 삭제했어요. 새 위치를 찍어주세요");
     }
   }, [room?.markers, nickname, deleteMarker]);
 
   const handleShare = useCallback(async () => {
     const ok = await copyToClipboard(window.location.href);
     if (ok) {
-      toast.info('링크가 복사되었어요! 친구들에게 공유해보세요');
+      toast.info("링크가 복사되었어요! 친구들에게 공유해보세요");
     } else {
-      toast.error('링크 복사에 실패했어요');
+      toast.error("링크 복사에 실패했어요");
     }
   }, []);
 
@@ -1691,12 +2005,15 @@ const RoomPage = () => {
       return;
     }
     getCurrentPosition();
-    toast.info('현재 위치를 가져오고 있어요...');
+    toast.info("현재 위치를 가져오고 있어요...");
   }, [needsProfile, getCurrentPosition]);
 
-  const handlePlaceSelect = useCallback((place: PlaceResult) => {
-    handleMapClick(place.lat, place.lng);
-  }, [handleMapClick]);
+  const handlePlaceSelect = useCallback(
+    (place: PlaceResult) => {
+      handleMapClick(place.lat, place.lng);
+    },
+    [handleMapClick],
+  );
 
   // --- Render ---
   if (isLoading && !room) {
@@ -1716,7 +2033,7 @@ const RoomPage = () => {
   }
 
   // 방 비밀번호 게이트
-  if (entryStep === 'room_password') {
+  if (entryStep === "room_password") {
     return (
       <EntryGate
         roomName={room.name}
@@ -1772,7 +2089,7 @@ const RoomPage = () => {
 
       {/* 데스크톱 사이드 패널 (1024px+) */}
       {hasAnyMarker && (
-        <div className="hidden lg:flex lg:w-[360px] lg:flex-col lg:border-l lg:border-black-300/50 lg:bg-white lg:overflow-y-auto">
+        <div className="hidden lg:flex lg:w-90 lg:flex-col lg:border-l lg:border-black-300/50 lg:bg-white lg:overflow-y-auto">
           <div className="p-4 border-b border-black-300/50">
             <RoomHeader
               roomName={room.name}
@@ -1837,6 +2154,7 @@ git commit -m "feat: RoomPage 통합 (Google Maps, GPS, PWA, 클립보드, 검�
 ## Task 15: App.tsx 레이아웃 조정
 
 **Files:**
+
 - Modify: `src/App.tsx`
 
 **Step 1: RoomPage는 전체 화면이므로 max-w-2xl 제한 제거**
@@ -1921,23 +2239,23 @@ git commit -m "chore: 최종 정리 및 빌드 검증"
 
 ## 작업 순서 요약
 
-| Task | 내용 | 의존성 |
-|------|------|--------|
-| 1 | 패키지 설치 + 환경변수 | 없음 |
-| 2 | 신규 타입 추가 | 없음 |
-| 3 | geo.ts 계산 유틸 (TDD) | Task 2 (LatLng 타입) |
-| 4 | clipboard.ts | 없음 |
-| 5 | Mock 데이터 JSON | Task 2 (타입) |
-| 6 | API 확장 (interface + mock + http) | Task 2, 3, 5 |
-| 7 | 커스텀 훅 6개 | Task 2, 6 |
-| 8 | App.tsx APIProvider | Task 1 |
-| 9 | MapView + GoogleMarker + RoutePolyline | Task 1, 2, 8 |
-| 10 | PlaceSearchBar + NearbyPlaceList | Task 2, 6, 7 |
-| 11 | uiStore PendingLocation 변경 | Task 2 |
-| 12 | LocationConfirmSheet 업데이트 | Task 7 (useGeocoding), 11 |
-| 13 | ResultPanel 확장 | Task 2, 10 |
-| 14 | RoomPage 통합 | Task 7, 9, 10, 11, 12, 13 |
-| 15 | App.tsx 레이아웃 조정 | Task 8, 14 |
-| 16 | 최종 검증 | 전체 |
+| Task | 내용                                   | 의존성                    |
+| ---- | -------------------------------------- | ------------------------- |
+| 1    | 패키지 설치 + 환경변수                 | 없음                      |
+| 2    | 신규 타입 추가                         | 없음                      |
+| 3    | geo.ts 계산 유틸 (TDD)                 | Task 2 (LatLng 타입)      |
+| 4    | clipboard.ts                           | 없음                      |
+| 5    | Mock 데이터 JSON                       | Task 2 (타입)             |
+| 6    | API 확장 (interface + mock + http)     | Task 2, 3, 5              |
+| 7    | 커스텀 훅 6개                          | Task 2, 6                 |
+| 8    | App.tsx APIProvider                    | Task 1                    |
+| 9    | MapView + GoogleMarker + RoutePolyline | Task 1, 2, 8              |
+| 10   | PlaceSearchBar + NearbyPlaceList       | Task 2, 6, 7              |
+| 11   | uiStore PendingLocation 변경           | Task 2                    |
+| 12   | LocationConfirmSheet 업데이트          | Task 7 (useGeocoding), 11 |
+| 13   | ResultPanel 확장                       | Task 2, 10                |
+| 14   | RoomPage 통합                          | Task 7, 9, 10, 11, 12, 13 |
+| 15   | App.tsx 레이아웃 조정                  | Task 8, 14                |
+| 16   | 최종 검증                              | 전체                      |
 
 **병렬 가능:** Task 1~5는 모두 독립적이므로 병렬 실행 가능.
