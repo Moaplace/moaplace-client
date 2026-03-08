@@ -3,8 +3,8 @@ import { create } from 'zustand';
 import type { EntryStep } from '@/types';
 
 interface PendingLocation {
-  x: number;
-  y: number;
+  lat: number;
+  lng: number;
 }
 
 interface UIState {

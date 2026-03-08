@@ -4,18 +4,25 @@ import { toast } from 'sonner';
 
 import EntryGate from '@/components/Panel/EntryGate';
 import MapActionBar from '@/components/Map/MapActionBar';
-import MockMapView from '@/components/Map/MockMapView';
+import MapView from '@/components/Map/MapView';
+import PlaceSearchBar from '@/components/Map/PlaceSearchBar';
 import LocationConfirmSheet from '@/components/Panel/LocationConfirmSheet';
 import ParticipantList from '@/components/Panel/ParticipantList';
 import ProfileSheet from '@/components/Panel/ProfileSheet';
 import ResultPanel from '@/components/Panel/ResultPanel';
 import RoomHeader from '@/components/Panel/RoomHeader';
+import PWAInstallBanner from '@/components/common/PWAInstallBanner';
+import useGeolocation from '@/hooks/useGeolocation';
+import usePWA from '@/hooks/usePWA';
+import { copyToClipboard } from '@/lib/clipboard';
 import { useRoomStore } from '@/store/roomStore';
 import { useUIStore } from '@/store/uiStore';
+import type { PlaceResult } from '@/types';
 
 const RoomPage = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const room = useRoomStore((s) => s.room);
+  const result = useRoomStore((s) => s.result);
   const isLoading = useRoomStore((s) => s.isLoading);
   const fetchRoom = useRoomStore((s) => s.fetchRoom);
   const addMarker = useRoomStore((s) => s.addMarker);
@@ -37,6 +44,9 @@ const RoomPage = () => {
 
   const [isProfileSheetOpen, setIsProfileSheetOpen] = useState(false);
 
+  const { position: gpsPosition, getCurrentPosition } = useGeolocation();
+  const { canInstall, install, dismiss } = usePWA();
+
   // 방 데이터 로드
   useEffect(() => {
     if (roomId) {
@@ -54,6 +64,14 @@ const RoomPage = () => {
       }
     }
   }, [room, entryStep, setEntryStep]);
+
+  // GPS 위치 → 지도 마커 등록 플로우
+  useEffect(() => {
+    if (gpsPosition && !pendingLocation) {
+      setPendingLocation({ lat: gpsPosition.lat, lng: gpsPosition.lng });
+      openLocationSheet();
+    }
+  }, [gpsPosition, pendingLocation, setPendingLocation, openLocationSheet]);
 
   // --- Entry handlers ---
   const handleRoomPasswordVerify = useCallback(async (password: string) => {
@@ -90,7 +108,7 @@ const RoomPage = () => {
   }, [verifyParticipant, setNickname, setParticipantPassword]);
 
   // --- Map handlers ---
-  const handleMapClick = useCallback((x: number, y: number) => {
+  const handleMapClick = useCallback((lat: number, lng: number) => {
     if (needsProfile) {
       setIsProfileSheetOpen(true);
       return;
@@ -98,7 +116,7 @@ const RoomPage = () => {
     const hasMyMarker = room?.markers.some((m) => m.nickname === nickname);
     if (hasMyMarker) return;
 
-    setPendingLocation({ x, y });
+    setPendingLocation({ lat, lng });
     openLocationSheet();
   }, [needsProfile, room?.markers, nickname, setPendingLocation, openLocationSheet]);
 
@@ -106,8 +124,8 @@ const RoomPage = () => {
     if (!pendingLocation) return;
     await addMarker({
       nickname,
-      lat: pendingLocation.y,
-      lng: pendingLocation.x,
+      lat: pendingLocation.lat,
+      lng: pendingLocation.lng,
       password: participantPassword,
     });
     closeLocationSheet();
@@ -123,10 +141,10 @@ const RoomPage = () => {
   }, [room?.markers, nickname, deleteMarker]);
 
   const handleShare = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
+    const ok = await copyToClipboard(window.location.href);
+    if (ok) {
       toast.info('링크가 복사되었어요! 친구들에게 공유해보세요');
-    } catch {
+    } else {
       toast.error('링크 복사에 실패했어요');
     }
   }, []);
@@ -136,8 +154,13 @@ const RoomPage = () => {
       setIsProfileSheetOpen(true);
       return;
     }
-    toast.info('지도를 탭하여 위치를 찍어주세요');
-  }, [needsProfile]);
+    getCurrentPosition();
+    toast.info('현재 위치를 가져오고 있어요...');
+  }, [needsProfile, getCurrentPosition]);
+
+  const handlePlaceSelect = useCallback((place: PlaceResult) => {
+    handleMapClick(place.lat, place.lng);
+  }, [handleMapClick]);
 
   // --- Render ---
   if (isLoading && !room) {
@@ -156,7 +179,7 @@ const RoomPage = () => {
     );
   }
 
-  // 방 비밀번호 게이트 (비밀번호 있는 방만)
+  // 방 비밀번호 게이트
   if (entryStep === 'room_password') {
     return (
       <EntryGate
@@ -173,7 +196,7 @@ const RoomPage = () => {
     <div className="flex h-dvh bg-background">
       {/* 지도 영역 */}
       <div className="flex-1 flex flex-col relative min-w-0">
-        {/* 헤더: 지도 위 오버레이 */}
+        {/* 헤더 + 검색바: 지도 위 오버레이 */}
         <div className="absolute top-0 left-0 right-0 z-10">
           <div className="flex items-center justify-between p-4 bg-white/90 backdrop-blur-sm rounded-b-2xl mx-3 mt-3 shadow-sm">
             <RoomHeader
@@ -181,11 +204,15 @@ const RoomPage = () => {
               participantCount={room.markers.length}
             />
           </div>
+          <div className="flex justify-center mt-2 px-3">
+            <PlaceSearchBar onPlaceSelect={handlePlaceSelect} />
+          </div>
         </div>
 
-        <MockMapView
+        <MapView
           markers={room.markers}
           myNickname={nickname}
+          result={result}
           onMapClick={handleMapClick}
           className="flex-1 min-h-0"
         />
@@ -198,9 +225,16 @@ const RoomPage = () => {
           hasMyMarker={hasMyMarker}
           showShare={hasAnyMarker}
         />
+
+        {/* PWA 설치 배너 */}
+        {canInstall && (
+          <div className="absolute bottom-20 left-3 right-3 z-10">
+            <PWAInstallBanner onInstall={install} onDismiss={dismiss} />
+          </div>
+        )}
       </div>
 
-      {/* 데스크톱 사이드 패널 (1024px+, 마커 있을 때만) */}
+      {/* 데스크톱 사이드 패널 (1024px+) */}
       {hasAnyMarker && (
         <div className="hidden lg:flex lg:w-[360px] lg:flex-col lg:border-l lg:border-black-300/50 lg:bg-white lg:overflow-y-auto">
           <div className="p-4 border-b border-black-300/50">
@@ -221,24 +255,26 @@ const RoomPage = () => {
           <ResultPanel
             markers={room.markers}
             myNickname={nickname}
+            result={result}
           />
         </div>
       )}
 
-      {/* 프로필 입력 Drawer (닉네임+비밀번호 미입력 시 지도 인터랙션에서 열림) */}
+      {/* 프로필 입력 Drawer */}
       <ProfileSheet
         open={isProfileSheetOpen}
         onSubmit={handleProfileSubmit}
         onClose={() => setIsProfileSheetOpen(false)}
       />
 
+      {/* 위치 확인 Drawer */}
       {pendingLocation && (
         <LocationConfirmSheet
           open={isLocationSheetOpen}
           onConfirm={handleLocationConfirm}
           onCancel={closeLocationSheet}
-          x={pendingLocation.x}
-          y={pendingLocation.y}
+          lat={pendingLocation.lat}
+          lng={pendingLocation.lng}
         />
       )}
     </div>

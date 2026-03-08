@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Map, MapMouseEvent } from '@vis.gl/react-google-maps';
+import { Map, type MapMouseEvent } from '@vis.gl/react-google-maps';
 
 import GoogleMarker from '@/components/Map/GoogleMarker';
 import RoutePolyline from '@/components/Map/RoutePolyline';

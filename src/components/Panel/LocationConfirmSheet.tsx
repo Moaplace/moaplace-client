@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { MapPin } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -9,22 +10,31 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
+import useGeocoding from '@/hooks/useGeocoding';
 
 interface LocationConfirmSheetProps {
   open: boolean;
   onConfirm: () => void;
   onCancel: () => void;
-  x: number;
-  y: number;
+  lat: number;
+  lng: number;
 }
 
 const LocationConfirmSheet = ({
   open,
   onConfirm,
   onCancel,
-  x,
-  y,
+  lat,
+  lng,
 }: LocationConfirmSheetProps) => {
+  const { address, isLoading, reverseGeocode } = useGeocoding();
+
+  useEffect(() => {
+    if (open) {
+      reverseGeocode(lat, lng);
+    }
+  }, [open, lat, lng, reverseGeocode]);
+
   return (
     <Drawer open={open} onOpenChange={(o) => !o && onCancel()}>
       <DrawerContent>
@@ -34,7 +44,7 @@ const LocationConfirmSheet = ({
             이 위치로 등록할까요?
           </DrawerTitle>
           <DrawerDescription>
-            좌표: ({x.toFixed(1)}, {y.toFixed(1)})
+            {isLoading ? '주소를 찾고 있어요...' : address ?? `(${lat.toFixed(4)}, ${lng.toFixed(4)})`}
           </DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>

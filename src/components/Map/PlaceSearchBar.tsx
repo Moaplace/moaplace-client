@@ -15,7 +15,7 @@ const PlaceSearchBar = ({ onPlaceSelect, className }: PlaceSearchBarProps) => {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const { results, search, clear } = usePlaceSearch();
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const handleChange = useCallback((value: string) => {
     setQuery(value);
