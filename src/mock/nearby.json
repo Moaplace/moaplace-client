@@ -1,0 +1,14 @@
+[
+  { "id": "n1", "name": "스타벅스 시청점", "category": "cafe", "lat": 37.5660, "lng": 126.9784, "distance": 120 },
+  { "id": "n2", "name": "투썸플레이스 광화문점", "category": "cafe", "lat": 37.5710, "lng": 126.9769, "distance": 350 },
+  { "id": "n3", "name": "블루보틀 삼청점", "category": "cafe", "lat": 37.5820, "lng": 126.9832, "distance": 800 },
+  { "id": "n4", "name": "을지로 골목식당", "category": "restaurant", "lat": 37.5660, "lng": 126.9910, "distance": 200 },
+  { "id": "n5", "name": "광화문 국밥집", "category": "restaurant", "lat": 37.5720, "lng": 126.9760, "distance": 400 },
+  { "id": "n6", "name": "명동 칼국수", "category": "restaurant", "lat": 37.5610, "lng": 126.9855, "distance": 550 },
+  { "id": "n7", "name": "종로3가 부대찌개", "category": "restaurant", "lat": 37.5710, "lng": 126.9920, "distance": 650 },
+  { "id": "n8", "name": "시청역 1호선", "category": "subway", "lat": 37.5657, "lng": 126.9773, "distance": 80 },
+  { "id": "n9", "name": "을지로입구역 2호선", "category": "subway", "lat": 37.5660, "lng": 126.9825, "distance": 250 },
+  { "id": "n10", "name": "광화문역 5호선", "category": "subway", "lat": 37.5710, "lng": 126.9768, "distance": 380 },
+  { "id": "n11", "name": "종각역 1호선", "category": "subway", "lat": 37.5700, "lng": 126.9831, "distance": 450 },
+  { "id": "n12", "name": "안국역 3호선", "category": "subway", "lat": 37.5764, "lng": 126.9854, "distance": 620 }
+]
