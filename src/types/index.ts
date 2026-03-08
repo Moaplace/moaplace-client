@@ -64,3 +64,35 @@ export interface MarkerDistance {
   nickname: string;
   distance: number;
 }
+
+/** 위경도 좌표 */
+export interface LatLng {
+  lat: number;
+  lng: number;
+}
+
+/** Places Autocomplete 검색 결과 */
+export interface PlaceResult {
+  placeId: string;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+}
+
+/** 주변 시설 (Nearby Search) */
+export interface NearbyPlace {
+  id: string;
+  name: string;
+  category: 'restaurant' | 'cafe' | 'subway';
+  lat: number;
+  lng: number;
+  distance: number;
+}
+
+/** Directions API 경로 결과 */
+export interface DirectionsResult {
+  distance: number;
+  duration: string;
+  polyline: LatLng[];
+}
