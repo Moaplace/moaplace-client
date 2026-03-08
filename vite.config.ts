@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     define: {
       __GOOGLE_MAPS_API_KEY__: JSON.stringify(env.GOOGLE_MAPS_API_KEY),
+      __USE_MOCK_API__: env.USE_MOCK_API === 'true',
     },
     resolve: {
       alias: {
