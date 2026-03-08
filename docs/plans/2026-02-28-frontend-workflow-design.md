@@ -26,8 +26,8 @@ Phase 6: 실시간 + PWA + 마무리 (Polling + GPS + PWA)
 
 ```typescript
 interface Room {
-  id: string;           // UUID
-  name: string;         // 모임 이름
+  id: string; // UUID
+  name: string; // 모임 이름
   markers: Marker[];
   createdAt: string;
 }
@@ -49,7 +49,7 @@ interface Centroid {
 
 interface RouteResult {
   totalDistance: number; // km
-  path: Marker[];       // 최단경로 순서
+  path: Marker[]; // 최단경로 순서
 }
 
 interface RoomResult {
@@ -205,7 +205,7 @@ Maps API 키 확보 후 MapView.tsx 내부만 교체.
 
 ```
 패키지: @vis.gl/react-google-maps
-환경변수: VITE_GOOGLE_MAPS_API_KEY
+환경변수: GOOGLE_MAPS_API_KEY
 
 마커 색상:
   - 내 마커: bg-sub (오렌지)
