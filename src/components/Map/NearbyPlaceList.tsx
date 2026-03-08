@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Coffee, MapPin, Train, UtensilsCrossed } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -22,18 +22,13 @@ const NearbyPlaceList = ({ lat, lng, className }: NearbyPlaceListProps) => {
   const [places, setPlaces] = useState<NearbyPlace[]>([]);
   const [category, setCategory] = useState<string>('all');
 
-  const fetchPlaces = useCallback(async (type: string) => {
-    const data = await api.getNearbyPlaces(lat, lng, type);
-    setPlaces(data);
-  }, [lat, lng]);
-
   useEffect(() => {
-    fetchPlaces(category);
-  }, [category, fetchPlaces]);
-
-  const handleCategoryChange = useCallback((key: string) => {
-    setCategory(key);
-  }, []);
+    const fetchPlaces = async () => {
+      const data = await api.getNearbyPlaces(lat, lng, category);
+      setPlaces(data);
+    };
+    fetchPlaces();
+  }, [lat, lng, category]);
 
   return (
     <div className={cn('flex flex-col gap-3', className)}>
@@ -43,7 +38,7 @@ const NearbyPlaceList = ({ lat, lng, className }: NearbyPlaceListProps) => {
         {CATEGORIES.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
-            onClick={() => handleCategoryChange(key)}
+            onClick={() => setCategory(key)}
             className={cn(
               'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-pretendard-md transition-colors',
               category === key

@@ -1,4 +1,4 @@
-import type { Room, Marker, MarkerRequest, RoomResult, RoomType, PlaceResult, NearbyPlace, DirectionsResult, LatLng } from '@/types';
+import type { Room, Marker, MarkerRequest, RoomResult, RoomType, PlaceResult, NearbyPlace, DirectionsResult } from '@/types';
 import type { ApiClient } from './api.interface';
 import { haversine, centroid, solveTSP } from './geo';
 import placesData from '@/mock/places.json';
@@ -124,11 +124,11 @@ const mockApi: ApiClient = {
     return data.filter((p) => p.category === type);
   },
 
-  async getDirections(_origin: LatLng, _destination: LatLng, _waypoints?: LatLng[]): Promise<DirectionsResult> {
+  async getDirections(): Promise<DirectionsResult> {
     return directionsData as DirectionsResult;
   },
 
-  async reverseGeocode(_lat: number, _lng: number): Promise<string> {
+  async reverseGeocode(): Promise<string> {
     return '서울특별시 중구 세종대로 110';
   },
 };
