@@ -14,16 +14,14 @@ interface LocationConfirmSheetProps {
   open: boolean;
   onConfirm: () => void;
   onCancel: () => void;
-  x: number;
-  y: number;
+  lat: number;
+  lng: number;
 }
 
 const LocationConfirmSheet = ({
   open,
   onConfirm,
   onCancel,
-  x,
-  y,
 }: LocationConfirmSheetProps) => {
   return (
     <Drawer open={open} onOpenChange={(o) => !o && onCancel()}>
@@ -33,11 +31,11 @@ const LocationConfirmSheet = ({
             <MapPin className="w-5 h-5 text-sub" />
             이 위치로 등록할까요?
           </DrawerTitle>
-          <DrawerDescription>
-            좌표: ({x.toFixed(1)}, {y.toFixed(1)})
+          <DrawerDescription className="mt-3 text-base font-pretendard-xbd text-black-600">
+            선택한 위치에 마커를 등록해요
           </DrawerDescription>
         </DrawerHeader>
-        <DrawerFooter>
+        <DrawerFooter className="-mt-2">
           <Button onClick={onConfirm} size="lg" className="w-full">
             여기로 확정!
           </Button>

@@ -607,7 +607,7 @@ moaplace-client/
 ├── vite.config.ts                  # Vite + vite-plugin-pwa 설정
 ├── tailwind.config.ts
 ├── tsconfig.json
-├── .env                            # VITE_GOOGLE_MAPS_API_KEY 등
+├── .env                            # GOOGLE_MAPS_API_KEY 등
 └── package.json
 ```
 

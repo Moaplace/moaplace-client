@@ -94,9 +94,13 @@
   --color-sub-600: var(--sub-600);
   --color-sub-100: var(--sub-100);
   --color-success: var(--success);
+  --color-success-100: var(--success-100);
   --color-error: var(--destructive);
+  --color-error-100: var(--error-100);
   --color-warning: var(--warning);
+  --color-warning-100: var(--warning-100);
   --color-info: var(--info);
+  --color-info-100: var(--info-100);
   --color-center: var(--color-center);
   --color-center-600: var(--color-center-600);
   --color-center-100: var(--color-center-100);
@@ -159,6 +163,10 @@
   --success: oklch(0.565 0.135 163.2); /* success #059669 */
   --warning: oklch(0.522 0.117 75.3); /* warning #A16207 */
   --info: oklch(0.478 0.108 232.7); /* info #0369A1 */
+  --success-100: oklch(from #ecfdf5 l c h); /* success100 */
+  --error-100: oklch(from #fef2f2 l c h); /* error100 */
+  --warning-100: oklch(from #fffbeb l c h); /* warning100 */
+  --info-100: oklch(from #eff6ff l c h); /* info100 */
 
   /* Center (중심점 보라) */
   --color-center: oklch(from #7C3AED l c h);

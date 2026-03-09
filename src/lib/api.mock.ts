@@ -1,5 +1,9 @@
-import type { Room, Marker, MarkerRequest, RoomResult, RoomType } from '@/types';
+import type { Room, Marker, MarkerRequest, RoomResult, RoomType, PlaceResult, NearbyPlace, DirectionsResult } from '@/types';
 import type { ApiClient } from './api.interface';
+import { haversine, centroid, solveTSP } from './geo';
+import placesData from '@/mock/places.json';
+import nearbyData from '@/mock/nearby.json';
+import directionsData from '@/mock/directions.json';
 
 const STORAGE_KEY = 'moaplace_rooms';
 
@@ -90,8 +94,42 @@ const mockApi: ApiClient = {
     const rooms = getRooms();
     const room = assertRoom(rooms[roomId]);
     if (room.markers.length < 2) return null;
-    // Phase 4에서 중심점/TSP 계산 연결
-    return null;
+
+    const center = centroid(room.markers);
+    const route = solveTSP(room.markers);
+    const distances = room.markers.map((m) => ({
+      markerId: m.id,
+      nickname: m.nickname,
+      distance: haversine(m, center),
+    }));
+
+    return {
+      centroid: { lat: center.lat, lng: center.lng },
+      route,
+      distances,
+    };
+  },
+
+  async searchPlaces(query: string): Promise<PlaceResult[]> {
+    const q = query.toLowerCase().trim();
+    if (!q) return [];
+    return (placesData as PlaceResult[]).filter(
+      (p) => p.name.toLowerCase().includes(q) || p.address.toLowerCase().includes(q),
+    );
+  },
+
+  async getNearbyPlaces(_lat: number, _lng: number, type?: string): Promise<NearbyPlace[]> {
+    const data = nearbyData as NearbyPlace[];
+    if (!type || type === 'all') return data;
+    return data.filter((p) => p.category === type);
+  },
+
+  async getDirections(): Promise<DirectionsResult> {
+    return directionsData as DirectionsResult;
+  },
+
+  async reverseGeocode(): Promise<string> {
+    return '서울특별시 중구 세종대로 110';
   },
 };
 

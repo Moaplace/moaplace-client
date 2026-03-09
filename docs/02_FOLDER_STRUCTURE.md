@@ -73,35 +73,35 @@ moaplace-client/
 ├── vite.config.ts
 ├── tailwind.config.ts
 ├── tsconfig.json
-├── .env                            # VITE_GOOGLE_MAPS_API_KEY 등
+├── .env                            # GOOGLE_MAPS_API_KEY 등
 └── package.json
 ```
 
 ## 2. 디렉토리별 역할
 
-| 디렉토리 | 역할 | 포함 파일 |
-|-----------|------|-----------|
-| `pages/` | 라우트와 1:1 매핑되는 페이지 컴포넌트 | `HomePage.tsx`, `RoomPage.tsx` |
-| `components/` | 재사용 가능한 UI 컴포넌트, 도메인별 하위 폴더로 그룹핑 | `Map/`, `Three/`, `Panel/`, `Common/`, `Home/` |
-| `components/Common/` | 도메인 무관 공통 UI (shadcn/ui 패턴) | `Button`, `Input`, `Toast`, `Modal` |
-| `hooks/` | 커스텀 React 훅. 로직 재사용 단위 | `useMap`, `useRoom`, `useGeolocation` |
-| `lib/` | API 레이어 (Port/Adapter/Factory) + 순수 함수 유틸리티. React에 의존하지 않는 로직 | `api.interface`, `api.mock`, `api`, `clipboard`, `utils` |
-| `store/` | Zustand 전역 상태 스토어 | `roomStore`, `uiStore` |
-| `constants/` | 앱 전역 상수 (컬러, 설정값 등) | `colors.ts` |
-| `types/` | TypeScript 타입/인터페이스 정의 | `index.ts` |
-| `styles/` | Tailwind 전역 스타일 | `globals.css` |
+| 디렉토리             | 역할                                                                               | 포함 파일                                                |
+| -------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `pages/`             | 라우트와 1:1 매핑되는 페이지 컴포넌트                                              | `HomePage.tsx`, `RoomPage.tsx`                           |
+| `components/`        | 재사용 가능한 UI 컴포넌트, 도메인별 하위 폴더로 그룹핑                             | `Map/`, `Three/`, `Panel/`, `Common/`, `Home/`           |
+| `components/Common/` | 도메인 무관 공통 UI (shadcn/ui 패턴)                                               | `Button`, `Input`, `Toast`, `Modal`                      |
+| `hooks/`             | 커스텀 React 훅. 로직 재사용 단위                                                  | `useMap`, `useRoom`, `useGeolocation`                    |
+| `lib/`               | API 레이어 (Port/Adapter/Factory) + 순수 함수 유틸리티. React에 의존하지 않는 로직 | `api.interface`, `api.mock`, `api`, `clipboard`, `utils` |
+| `store/`             | Zustand 전역 상태 스토어                                                           | `roomStore`, `uiStore`                                   |
+| `constants/`         | 앱 전역 상수 (컬러, 설정값 등)                                                     | `colors.ts`                                              |
+| `types/`             | TypeScript 타입/인터페이스 정의                                                    | `index.ts`                                               |
+| `styles/`            | Tailwind 전역 스타일                                                               | `globals.css`                                            |
 
 ## 3. 파일 네이밍 규칙
 
-| 종류 | 네이밍 | 확장자 | 예시 |
-|------|--------|--------|------|
+| 종류            | 네이밍                     | 확장자 | 예시                           |
+| --------------- | -------------------------- | ------ | ------------------------------ |
 | 페이지 컴포넌트 | PascalCase + `Page` 접미사 | `.tsx` | `HomePage.tsx`, `RoomPage.tsx` |
-| UI 컴포넌트 | PascalCase | `.tsx` | `Button.tsx`, `MapView.tsx` |
-| 커스텀 훅 | `use` + PascalCase | `.ts` | `useMap.ts`, `useRoom.ts` |
-| 유틸리티 | camelCase | `.ts` | `centroid.ts`, `haversine.ts` |
-| 스토어 | camelCase + `Store` 접미사 | `.ts` | `roomStore.ts`, `uiStore.ts` |
-| 상수 | camelCase | `.ts` | `colors.ts` |
-| 타입 | camelCase | `.ts` | `index.ts` |
+| UI 컴포넌트     | PascalCase                 | `.tsx` | `Button.tsx`, `MapView.tsx`    |
+| 커스텀 훅       | `use` + PascalCase         | `.ts`  | `useMap.ts`, `useRoom.ts`      |
+| 유틸리티        | camelCase                  | `.ts`  | `centroid.ts`, `haversine.ts`  |
+| 스토어          | camelCase + `Store` 접미사 | `.ts`  | `roomStore.ts`, `uiStore.ts`   |
+| 상수            | camelCase                  | `.ts`  | `colors.ts`                    |
+| 타입            | camelCase                  | `.ts`  | `index.ts`                     |
 
 ## 4. import 순서 규칙
 
@@ -109,23 +109,23 @@ moaplace-client/
 
 ```tsx
 // 1. React 및 React 관련
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 // 2. 외부 라이브러리
-import { Map } from '@vis.gl/react-google-maps';
-import { create } from 'zustand';
+import { Map } from "@vis.gl/react-google-maps";
+import { create } from "zustand";
 
 // 3. 내부 모듈 (절대 경로 또는 상대 경로)
-import { useRoom } from '@/hooks/useRoom';
-import { Button } from '@/components/Common/Button';
-import { calculateCentroid } from '@/lib/centroid';
-import { useRoomStore } from '@/store/roomStore';
+import { useRoom } from "@/hooks/useRoom";
+import { Button } from "@/components/Common/Button";
+import { calculateCentroid } from "@/lib/centroid";
+import { useRoomStore } from "@/store/roomStore";
 
 // 4. 타입 (type-only import)
-import type { Room, Marker } from '@/types';
+import type { Room, Marker } from "@/types";
 
 // 5. 스타일
-import './MapView.css';
+import "./MapView.css";
 ```
 
 ## 5. 컴포넌트 폴더 구조 규칙

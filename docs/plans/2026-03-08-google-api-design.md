@@ -93,7 +93,7 @@ MVP 단계에서는 무료 크레딧으로 충분히 커버 가능.
 5. API 키 제한 설정:
    - HTTP 리퍼러 제한 (도메인 화이트리스트)
    - API 제한 (위 4개 API만 허용)
-6. `.env`에 `VITE_GOOGLE_MAPS_API_KEY` 설정
+6. `.env`에 `GOOGLE_MAPS_API_KEY` 설정
 
 ---
 

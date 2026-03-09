@@ -1,24 +1,30 @@
-import { Users } from 'lucide-react';
-
-import { Badge } from '@/components/ui/badge';
+import { memo } from 'react';
+import { ChevronDown, Users } from 'lucide-react';
 
 interface RoomHeaderProps {
   roomName: string;
   participantCount: number;
+  onBadgeClick?: () => void;
 }
 
-const RoomHeader = ({ roomName, participantCount }: RoomHeaderProps) => {
+const RoomHeader = memo(({ roomName, participantCount, onBadgeClick }: RoomHeaderProps) => {
   return (
-    <div className="flex items-center justify-between h-14">
+    <div className="flex items-center justify-between w-full">
       <h1 className="text-lg font-pretendard-sb text-black truncate">
         {roomName}
       </h1>
-      <Badge variant="secondary" className="bg-primary-100 text-primary border-0 gap-1">
-        <Users className="w-3 h-3" />
+      <button
+        onClick={onBadgeClick}
+        className="flex items-center gap-1 py-2 pl-3 pr-2 text-sm font-pretendard-md text-primary active:scale-95 transition-transform"
+      >
+        <Users className="w-4 h-4" />
         {participantCount}명
-      </Badge>
+        <ChevronDown className="w-4 h-4" />
+      </button>
     </div>
   );
-};
+});
+
+RoomHeader.displayName = 'RoomHeader';
 
 export default RoomHeader;

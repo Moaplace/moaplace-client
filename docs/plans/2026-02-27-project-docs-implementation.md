@@ -9,6 +9,7 @@
 **Tech Stack:** Markdown, PRD v1.2, Toss UI/UX 원칙, MoaPlace 컬러 시스템 v2.1, shadcn/ui 패턴
 
 **참조 문서:**
+
 - `docs/PRD.md` — 프로젝트 기획서 (섹션 8~11 중심)
 - `docs/TOSS_UI_UX_DESIGN.md` — Toss UI/UX 디자인 법칙 10가지 + 라이팅 8원칙
 - `docs/Moaplace_ColorSystem.md` — MoaPlace 컬러 시스템 v2.1 (18색)
@@ -18,6 +19,7 @@
 ### Task 1: 01_ARCHITECTURE.md — 시스템 아키텍처
 
 **Files:**
+
 - Create: `docs/plans/01_ARCHITECTURE.md`
 
 **Step 1: 문서 작성**
@@ -35,29 +37,30 @@
 
 여러 사람의 위치를 모아 최적의 중간지점을 찾아주는 PWA 서비스.
 로그인 없이 URL 공유만으로 즉시 사용 가능한 경량 위치 기반 앱이다.
-
 ```
+
 ┌─────────────────────────────────────────────────┐
-│                   Client (PWA)                   │
-│  React + Vite + TypeScript + Tailwind + Three.js │
-│                                                   │
-│  Vercel 배포                                      │
+│ Client (PWA) │
+│ React + Vite + TypeScript + Tailwind + Three.js │
+│ │
+│ Vercel 배포 │
 └──────────────────────┬──────────────────────────┘
-                       │ REST API (Axios)
-                       │ Polling 3초 간격
-                       ▼
+│ REST API (Axios)
+│ Polling 3초 간격
+▼
 ┌─────────────────────────────────────────────────┐
-│                Server (Spring Boot 3.x)          │
-│  Java 17+ / RESTful API / Swagger                │
-│                                                   │
-│  AWS EC2 / Railway 배포                           │
+│ Server (Spring Boot 3.x) │
+│ Java 17+ / RESTful API / Swagger │
+│ │
+│ AWS EC2 / Railway 배포 │
 └──────────────────────┬──────────────────────────┘
-                       │
-                       ▼
+│
+▼
 ┌─────────────────────────────────────────────────┐
-│                Redis (Docker)                     │
-│  TTL 24시간 임시 저장 / Hash 구조                 │
+│ Redis (Docker) │
+│ TTL 24시간 임시 저장 / Hash 구조 │
 └─────────────────────────────────────────────────┘
+
 ```
 
 ## 2. 프론트엔드 기술스택
@@ -79,25 +82,27 @@
 ## 3. 데이터 플로우
 
 ```
+
 [방 생성] → POST /api/rooms → UUID 발급
-    │
-    ▼
+│
+▼
 [URL 공유] → https://moaplace.com/room/{uuid}
-    │
-    ▼
+│
+▼
 [참여자 접속] → GET /api/rooms/{roomId} → 기존 마커 표시
-    │
-    ▼
+│
+▼
 [위치 등록] → POST /api/rooms/{roomId}/markers → 마커 저장
-    │
-    ▼
+│
+▼
 [실시간 동기화] → GET /api/rooms/{roomId} (3초 Polling)
-    │
-    ▼
+│
+▼
 [결과 계산] → GET /api/rooms/{roomId}/result
-    │           → 중심점(산술 평균) + 최단거리(TSP)
-    ▼
+│ → 중심점(산술 평균) + 최단거리(TSP)
+▼
 [결과 표시] → 지도 위 중심점 마커 + 경로 폴리라인
+
 ```
 
 ## 4. API 엔드포인트
@@ -117,8 +122,10 @@
 모든 마커의 좌표 산술 평균:
 
 ```
+
 centroid_lat = (lat1 + lat2 + ... + latN) / N
 centroid_lng = (lng1 + lng2 + ... + lngN) / N
+
 ```
 
 ### 5.2 최단거리 경로 (TSP)
@@ -129,9 +136,11 @@ centroid_lng = (lng1 + lng2 + ... + lngN) / N
 ### 5.3 거리 계산 (Haversine)
 
 ```
+
 a = sin²(Δlat/2) + cos(lat1) × cos(lat2) × sin²(Δlng/2)
 c = 2 × atan2(√a, √(1-a))
-distance = R × c    (R = 6,371km)
+distance = R × c (R = 6,371km)
+
 ```
 
 ## 6. 상태 관리 전략
@@ -163,6 +172,7 @@ git commit -m "docs: add architecture document"
 ### Task 2: 02_FOLDER_STRUCTURE.md — 폴더 구조
 
 **Files:**
+
 - Create: `docs/plans/02_FOLDER_STRUCTURE.md`
 
 **Step 1: 문서 작성**
@@ -177,78 +187,79 @@ git commit -m "docs: add architecture document"
 ---
 
 ## 1. 디렉토리 트리
-
 ```
+
 moaplace-client/
 ├── public/
-│   ├── manifest.json               # PWA 매니페스트
-│   ├── icons/                      # PWA 아이콘
-│   │   ├── icon-192x192.png
-│   │   └── icon-512x512.png
-│   └── favicon.ico
+│ ├── manifest.json # PWA 매니페스트
+│ ├── icons/ # PWA 아이콘
+│ │ ├── icon-192x192.png
+│ │ └── icon-512x512.png
+│ └── favicon.ico
 ├── src/
-│   ├── main.tsx                    # 엔트리 포인트
-│   ├── App.tsx                     # React Router 설정
-│   ├── pages/                      # 페이지 컴포넌트
-│   │   ├── HomePage.tsx
-│   │   └── RoomPage.tsx
-│   ├── components/                 # UI 컴포넌트
-│   │   ├── Map/                    # 2D 지도 관련
-│   │   │   ├── MapView.tsx
-│   │   │   ├── Marker.tsx
-│   │   │   ├── CenterPoint.tsx
-│   │   │   └── RouteLine.tsx
-│   │   ├── Three/                  # Three.js 3D
-│   │   │   ├── Scene3D.tsx
-│   │   │   ├── Marker3D.tsx
-│   │   │   ├── Route3D.tsx
-│   │   │   ├── CenterEffect.tsx
-│   │   │   └── Controls.tsx
-│   │   ├── Panel/                  # 하단 패널
-│   │   │   ├── ResultPanel.tsx
-│   │   │   └── ParticipantList.tsx
-│   │   ├── Common/                 # 공통 UI (shadcn/ui 패턴)
-│   │   │   ├── Button.tsx
-│   │   │   ├── Input.tsx
-│   │   │   ├── Toast.tsx
-│   │   │   ├── Modal.tsx
-│   │   │   └── PWAInstallBanner.tsx
-│   │   └── Home/
-│   │       └── CreateRoom.tsx
-│   ├── hooks/                      # 커스텀 훅
-│   │   ├── useMap.ts
-│   │   ├── useRoom.ts
-│   │   ├── useGeolocation.ts
-│   │   ├── usePWA.ts
-│   │   └── useThreeView.ts
-│   ├── lib/                        # 유틸리티 / 핵심 로직
-│   │   ├── api.ts
-│   │   ├── centroid.ts
-│   │   ├── tsp.ts
-│   │   ├── haversine.ts
-│   │   ├── clipboard.ts
-│   │   └── utils.ts                # cn() 등 공통 유틸
-│   ├── store/                      # Zustand 스토어
-│   │   ├── roomStore.ts
-│   │   └── uiStore.ts
-│   ├── constants/                  # 상수 정의
-│   │   └── colors.ts               # AppColors (컬러 시스템)
-│   ├── types/                      # TypeScript 타입
-│   │   └── index.ts
-│   └── styles/
-│       └── globals.css             # Tailwind 전역 스타일
-├── docs/                           # 프로젝트 문서
-│   ├── PRD.md
-│   ├── TOSS_UI_UX_DESIGN.md
-│   ├── Moaplace_ColorSystem.md
-│   └── plans/                      # 가이드 문서
+│ ├── main.tsx # 엔트리 포인트
+│ ├── App.tsx # React Router 설정
+│ ├── pages/ # 페이지 컴포넌트
+│ │ ├── HomePage.tsx
+│ │ └── RoomPage.tsx
+│ ├── components/ # UI 컴포넌트
+│ │ ├── Map/ # 2D 지도 관련
+│ │ │ ├── MapView.tsx
+│ │ │ ├── Marker.tsx
+│ │ │ ├── CenterPoint.tsx
+│ │ │ └── RouteLine.tsx
+│ │ ├── Three/ # Three.js 3D
+│ │ │ ├── Scene3D.tsx
+│ │ │ ├── Marker3D.tsx
+│ │ │ ├── Route3D.tsx
+│ │ │ ├── CenterEffect.tsx
+│ │ │ └── Controls.tsx
+│ │ ├── Panel/ # 하단 패널
+│ │ │ ├── ResultPanel.tsx
+│ │ │ └── ParticipantList.tsx
+│ │ ├── Common/ # 공통 UI (shadcn/ui 패턴)
+│ │ │ ├── Button.tsx
+│ │ │ ├── Input.tsx
+│ │ │ ├── Toast.tsx
+│ │ │ ├── Modal.tsx
+│ │ │ └── PWAInstallBanner.tsx
+│ │ └── Home/
+│ │ └── CreateRoom.tsx
+│ ├── hooks/ # 커스텀 훅
+│ │ ├── useMap.ts
+│ │ ├── useRoom.ts
+│ │ ├── useGeolocation.ts
+│ │ ├── usePWA.ts
+│ │ └── useThreeView.ts
+│ ├── lib/ # 유틸리티 / 핵심 로직
+│ │ ├── api.ts
+│ │ ├── centroid.ts
+│ │ ├── tsp.ts
+│ │ ├── haversine.ts
+│ │ ├── clipboard.ts
+│ │ └── utils.ts # cn() 등 공통 유틸
+│ ├── store/ # Zustand 스토어
+│ │ ├── roomStore.ts
+│ │ └── uiStore.ts
+│ ├── constants/ # 상수 정의
+│ │ └── colors.ts # AppColors (컬러 시스템)
+│ ├── types/ # TypeScript 타입
+│ │ └── index.ts
+│ └── styles/
+│ └── globals.css # Tailwind 전역 스타일
+├── docs/ # 프로젝트 문서
+│ ├── PRD.md
+│ ├── TOSS_UI_UX_DESIGN.md
+│ ├── Moaplace_ColorSystem.md
+│ └── plans/ # 가이드 문서
 ├── index.html
 ├── vite.config.ts
 ├── tailwind.config.ts
 ├── tsconfig.json
-├── .env                            # VITE_GOOGLE_MAPS_API_KEY 등
+├── .env # GOOGLE_MAPS_API_KEY 등
 └── package.json
-```
+
+````
 
 ## 2. 디렉토리별 역할
 
@@ -299,7 +310,7 @@ import type { Room, Marker } from '@/types';
 
 // 5. 스타일
 import './MapView.css';
-```
+````
 
 ## 5. 컴포넌트 폴더 구조 규칙
 
@@ -307,27 +318,29 @@ import './MapView.css';
 - **도메인별 그룹핑:** `Map/`, `Three/`, `Panel/` 등 기능 도메인으로 분류
 - **Common/:** 2개 이상의 도메인에서 사용되는 컴포넌트만 이동
 - **페이지 전용 컴포넌트:** 해당 도메인 폴더에 배치 (예: `Home/CreateRoom.tsx`)
-```
+
+````
 
 **Step 2: 커밋**
 
 ```bash
 git add docs/plans/02_FOLDER_STRUCTURE.md
 git commit -m "docs: add folder structure document"
-```
+````
 
 ---
 
 ### Task 3: 03_CODE_CONVENTIONS.md — 코딩 컨벤션
 
 **Files:**
+
 - Create: `docs/plans/03_CODE_CONVENTIONS.md`
 
 **Step 1: 문서 작성**
 
 아래 내용으로 파일을 생성한다:
 
-```markdown
+````markdown
 # 03. 코딩 컨벤션
 
 > MoaPlace 클라이언트의 TypeScript, React, 상태 관리, 스타일링, API, UX 라이팅 규칙
@@ -370,6 +383,7 @@ type RoomWithResult = Room & { centroid: Centroid };
 // DON'T: 객체를 type으로 정의하지 않는다
 type Room = { id: string; ... }  // ✗
 ```
+````
 
 ### 1.3 열거형
 
@@ -378,14 +392,17 @@ type Room = { id: string; ... }  // ✗
 ```ts
 // DO
 const VIEW_MODE = {
-  MAP_2D: '2d',
-  THREE_3D: '3d',
+  MAP_2D: "2d",
+  THREE_3D: "3d",
 } as const;
 
-type ViewMode = typeof VIEW_MODE[keyof typeof VIEW_MODE];
+type ViewMode = (typeof VIEW_MODE)[keyof typeof VIEW_MODE];
 
 // DON'T
-enum ViewMode { MAP_2D = '2d', THREE_3D = '3d' }  // ✗
+enum ViewMode {
+  MAP_2D = "2d",
+  THREE_3D = "3d",
+} // ✗
 ```
 
 ## 2. React 컴포넌트 규칙
@@ -398,14 +415,20 @@ enum ViewMode { MAP_2D = '2d', THREE_3D = '3d' }  // ✗
 
 ```tsx
 interface ButtonProps {
-  variant?: 'primary' | 'secondary' | 'destructive';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "secondary" | "destructive";
+  size?: "sm" | "md" | "lg";
   children: React.ReactNode;
   onClick?: () => void;
   disabled?: boolean;
 }
 
-const Button = ({ variant = 'primary', size = 'md', children, onClick, disabled }: ButtonProps) => {
+const Button = ({
+  variant = "primary",
+  size = "md",
+  children,
+  onClick,
+  disabled,
+}: ButtonProps) => {
   return (
     <button
       className={cn(buttonVariants({ variant, size }))}
@@ -446,8 +469,12 @@ const MapView = ({ onMarkerPlace }: MapViewProps) => {
 
 ```tsx
 // DO: 단순 조건
-{markers.length >= 2 && <CenterPoint position={centroid} />}
-{isLoading ? <Skeleton /> : <ResultPanel data={result} />}
+{
+  markers.length >= 2 && <CenterPoint position={centroid} />;
+}
+{
+  isLoading ? <Skeleton /> : <ResultPanel data={result} />;
+}
 
 // DO: 복잡한 분기
 if (!room) return <LoadingSpinner />;
@@ -463,9 +490,9 @@ return <MapView room={room} />;
 - 비동기 로직은 스토어 액션 내부에서 처리
 
 ```ts
-import { create } from 'zustand';
-import { api } from '@/lib/api';
-import type { Room, Marker } from '@/types';
+import { create } from "zustand";
+import { api } from "@/lib/api";
+import type { Room, Marker } from "@/types";
 
 interface RoomState {
   room: Room | null;
@@ -473,7 +500,7 @@ interface RoomState {
   error: string | null;
 
   fetchRoom: (roomId: string) => Promise<void>;
-  addMarker: (roomId: string, marker: Omit<Marker, 'id'>) => Promise<void>;
+  addMarker: (roomId: string, marker: Omit<Marker, "id">) => Promise<void>;
 }
 
 export const useRoomStore = create<RoomState>((set) => ({
@@ -487,7 +514,7 @@ export const useRoomStore = create<RoomState>((set) => ({
       const room = await api.getRoom(roomId);
       set({ room, isLoading: false });
     } catch (e) {
-      set({ error: '방 정보를 불러올 수 없어요', isLoading: false });
+      set({ error: "방 정보를 불러올 수 없어요", isLoading: false });
     }
   },
 
@@ -500,7 +527,7 @@ export const useRoomStore = create<RoomState>((set) => ({
           : null,
       }));
     } catch (e) {
-      set({ error: '위치 등록에 실패했어요' });
+      set({ error: "위치 등록에 실패했어요" });
     }
   },
 }));
@@ -516,7 +543,7 @@ const markers = useRoomStore((state) => state.room?.markers ?? []);
 const isLoading = useRoomStore((state) => state.isLoading);
 
 // DON'T: 전체 스토어 구독
-const { room, isLoading, error } = useRoomStore();  // ✗ 리렌더링 과다
+const { room, isLoading, error } = useRoomStore(); // ✗ 리렌더링 과다
 ```
 
 ## 4. 스타일링 (Tailwind CSS)
@@ -533,8 +560,8 @@ const { room, isLoading, error } = useRoomStore();  // ✗ 리렌더링 과다
 
 ```ts
 // src/lib/utils.ts
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 ```
@@ -565,24 +592,26 @@ export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
 
 ```ts
 // src/lib/api.ts
-import axios from 'axios';
-import type { Room, Marker, RoomResult } from '@/types';
+import axios from "axios";
+import type { Room, Marker, RoomResult } from "@/types";
 
 const client = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { "Content-Type": "application/json" },
 });
 
 export const api = {
   createRoom: (name?: string) =>
-    client.post<Room>('/rooms', { name }).then((res) => res.data),
+    client.post<Room>("/rooms", { name }).then((res) => res.data),
 
   getRoom: (roomId: string) =>
     client.get<Room>(`/rooms/${roomId}`).then((res) => res.data),
 
-  addMarker: (roomId: string, marker: Omit<Marker, 'id'>) =>
-    client.post<Marker>(`/rooms/${roomId}/markers`, marker).then((res) => res.data),
+  addMarker: (roomId: string, marker: Omit<Marker, "id">) =>
+    client
+      .post<Marker>(`/rooms/${roomId}/markers`, marker)
+      .then((res) => res.data),
 
   deleteMarker: (roomId: string, markerId: string) =>
     client.delete(`/rooms/${roomId}/markers/${markerId}`),
@@ -618,15 +647,15 @@ try {
 
 ### 6.2 주요 마이크로카피
 
-| UI 요소 | 텍스트 | 적용 원칙 |
-|---------|--------|-----------|
-| CTA 버튼 | "새로운 모임 만들기" | Predictable Hint |
-| 위치 확정 | "여기로 확정!" | Focus on Key Message |
-| 빈 상태 | "아직 아무도 위치를 찍지 않았어요. 첫 번째로 찍어볼까요?" | Find Hidden Emotion |
-| 등록 완료 | "위치가 등록되었어요!" | Peak-End Rule |
-| 링크 복사 | "링크가 복사되었어요! 친구들에게 공유해보세요" | Find Hidden Emotion |
-| 에러 | "위치를 가져올 수 없었어요. 다시 시도해볼까요?" | Suggest Over Force |
-| 플레이스홀더 | "모임 이름을 입력해주세요 (예: 주말 점심 모임)" | Easy to Speak |
+| UI 요소      | 텍스트                                                    | 적용 원칙            |
+| ------------ | --------------------------------------------------------- | -------------------- |
+| CTA 버튼     | "새로운 모임 만들기"                                      | Predictable Hint     |
+| 위치 확정    | "여기로 확정!"                                            | Focus on Key Message |
+| 빈 상태      | "아직 아무도 위치를 찍지 않았어요. 첫 번째로 찍어볼까요?" | Find Hidden Emotion  |
+| 등록 완료    | "위치가 등록되었어요!"                                    | Peak-End Rule        |
+| 링크 복사    | "링크가 복사되었어요! 친구들에게 공유해보세요"            | Find Hidden Emotion  |
+| 에러         | "위치를 가져올 수 없었어요. 다시 시도해볼까요?"           | Suggest Over Force   |
+| 플레이스홀더 | "모임 이름을 입력해주세요 (예: 주말 점심 모임)"           | Easy to Speak        |
 
 ### 6.3 금지 표현
 
@@ -634,27 +663,29 @@ try {
 - 공포형: "이 기능을 놓치면 ~" → 삭제
 - 전문 용어: "API 호출 실패" → "정보를 가져올 수 없었어요"
 - 불필요한 단어: "혹시", "앞으로", "현재" → 제거
-```
+
+````
 
 **Step 2: 커밋**
 
 ```bash
 git add docs/plans/03_CODE_CONVENTIONS.md
 git commit -m "docs: add code conventions document"
-```
+````
 
 ---
 
 ### Task 4: 04_CODE_GENERATION_GUIDE.md — AI 코드 생성 가이드
 
 **Files:**
+
 - Create: `docs/plans/04_CODE_GENERATION_GUIDE.md`
 
 **Step 1: 문서 작성**
 
 아래 내용으로 파일을 생성한다:
 
-```markdown
+````markdown
 # 04. 코드 생성 가이드
 
 > AI 및 개발자가 코드 생성 시 따라야 할 템플릿과 패턴.
@@ -669,12 +700,12 @@ git commit -m "docs: add code conventions document"
 `src/components/Common/` 하위에 생성:
 
 ```tsx
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 // --- 1. Props interface ---
 interface ComponentNameProps {
-  variant?: 'default' | 'secondary';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "default" | "secondary";
+  size?: "sm" | "md" | "lg";
   className?: string;
   children: React.ReactNode;
 }
@@ -682,27 +713,27 @@ interface ComponentNameProps {
 // --- 2. 변형 스타일 (선택) ---
 const componentVariants = {
   variant: {
-    default: 'bg-primary text-white',
-    secondary: 'border border-black-300 text-black-800',
+    default: "bg-primary text-white",
+    secondary: "border border-black-300 text-black-800",
   },
   size: {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-base",
+    lg: "px-6 py-3 text-lg",
   },
 };
 
 // --- 3. 컴포넌트 ---
 const ComponentName = ({
-  variant = 'default',
-  size = 'md',
+  variant = "default",
+  size = "md",
   className,
   children,
 }: ComponentNameProps) => {
   return (
     <div
       className={cn(
-        'base-styles-here',
+        "base-styles-here",
         componentVariants.variant[variant],
         componentVariants.size[size],
         className,
@@ -715,14 +746,15 @@ const ComponentName = ({
 
 export default ComponentName;
 ```
+````
 
 ### 1.2 도메인 컴포넌트
 
 `src/components/{Domain}/` 하위에 생성:
 
 ```tsx
-import { useRoomStore } from '@/store/roomStore';
-import type { Marker } from '@/types';
+import { useRoomStore } from "@/store/roomStore";
+import type { Marker } from "@/types";
 
 interface MarkerItemProps {
   marker: Marker;
@@ -731,14 +763,15 @@ interface MarkerItemProps {
 
 const MarkerItem = ({ marker, isOwn }: MarkerItemProps) => {
   return (
-    <div className={cn(
-      'flex items-center gap-3 px-4 py-3 rounded-lg',
-      isOwn ? 'bg-sub-100' : 'bg-black-100',
-    )}>
-      <span className={cn(
-        'w-3 h-3 rounded-full',
-        isOwn ? 'bg-sub' : 'bg-primary',
-      )} />
+    <div
+      className={cn(
+        "flex items-center gap-3 px-4 py-3 rounded-lg",
+        isOwn ? "bg-sub-100" : "bg-black-100",
+      )}
+    >
+      <span
+        className={cn("w-3 h-3 rounded-full", isOwn ? "bg-sub" : "bg-primary")}
+      />
       <span className="text-black-800 font-medium">{marker.nickname}</span>
     </div>
   );
@@ -752,9 +785,9 @@ export default MarkerItem;
 `src/pages/` 하위에 생성:
 
 ```tsx
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { useRoomStore } from '@/store/roomStore';
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useRoomStore } from "@/store/roomStore";
 
 const RoomPage = () => {
   const { roomId } = useParams<{ roomId: string }>();
@@ -769,11 +802,7 @@ const RoomPage = () => {
   if (isLoading) return <LoadingSpinner />;
   if (!room) return <NotFound />;
 
-  return (
-    <div className="h-screen flex flex-col">
-      {/* 페이지 내용 */}
-    </div>
-  );
+  return <div className="h-screen flex flex-col">{/* 페이지 내용 */}</div>;
 };
 
 export default RoomPage;
@@ -784,7 +813,7 @@ export default RoomPage;
 `src/hooks/` 하위에 생성:
 
 ```ts
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 
 interface UseGeolocationReturn {
   position: { lat: number; lng: number } | null;
@@ -794,7 +823,9 @@ interface UseGeolocationReturn {
 }
 
 const useGeolocation = (): UseGeolocationReturn => {
-  const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null);
+  const [position, setPosition] = useState<{ lat: number; lng: number } | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -808,7 +839,7 @@ const useGeolocation = (): UseGeolocationReturn => {
         setIsLoading(false);
       },
       (err) => {
-        setError('위치를 가져올 수 없었어요');
+        setError("위치를 가져올 수 없었어요");
         setIsLoading(false);
       },
     );
@@ -829,7 +860,7 @@ export default useGeolocation;
 `src/store/` 하위에 생성:
 
 ```ts
-import { create } from 'zustand';
+import { create } from "zustand";
 
 // --- 1. State interface ---
 interface ExampleState {
@@ -860,7 +891,7 @@ export const useExampleStore = create<ExampleState>((set) => ({
       const data = await api.getData();
       set({ data, isLoading: false });
     } catch {
-      set({ error: '데이터를 불러올 수 없어요', isLoading: false });
+      set({ error: "데이터를 불러올 수 없어요", isLoading: false });
     }
   },
 
@@ -884,7 +915,12 @@ export const useExampleStore = create<ExampleState>((set) => ({
  * @param lng2 - 도착지 경도
  * @returns 거리 (km)
  */
-export const haversine = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
+export const haversine = (
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
+): number => {
   const R = 6371;
   const dLat = toRad(lat2 - lat1);
   const dLng = toRad(lng2 - lng1);
@@ -900,39 +936,41 @@ const toRad = (deg: number): number => (deg * Math.PI) / 180;
 
 ## 6. 금지 패턴
 
-| 금지 | 대안 |
-|------|------|
-| `any` 타입 | `unknown` + 타입 좁히기 |
-| `enum` | `as const` 객체 |
-| `class` 컴포넌트 | 함수형 컴포넌트 |
-| 인라인 `style={}` | Tailwind 클래스 |
-| 하드코딩 색상 `#3B82F6` | `bg-primary`, `text-primary` |
-| `index.ts` 배럴 export | 직접 파일 import |
-| `useEffect` 내 데이터 fetch | Zustand 액션으로 분리 |
+| 금지                          | 대안                                     |
+| ----------------------------- | ---------------------------------------- |
+| `any` 타입                    | `unknown` + 타입 좁히기                  |
+| `enum`                        | `as const` 객체                          |
+| `class` 컴포넌트              | 함수형 컴포넌트                          |
+| 인라인 `style={}`             | Tailwind 클래스                          |
+| 하드코딩 색상 `#3B82F6`       | `bg-primary`, `text-primary`             |
+| `index.ts` 배럴 export        | 직접 파일 import                         |
+| `useEffect` 내 데이터 fetch   | Zustand 액션으로 분리                    |
 | 전체 스토어 구독 `useStore()` | selector 구독 `useStore((s) => s.field)` |
-| `console.log` (배포 코드) | 제거 또는 에러만 `console.error` |
-| `!important` (CSS) | Tailwind 클래스 우선순위로 해결 |
-```
+| `console.log` (배포 코드)     | 제거 또는 에러만 `console.error`         |
+| `!important` (CSS)            | Tailwind 클래스 우선순위로 해결          |
+
+````
 
 **Step 2: 커밋**
 
 ```bash
 git add docs/plans/04_CODE_GENERATION_GUIDE.md
 git commit -m "docs: add code generation guide document"
-```
+````
 
 ---
 
 ### Task 5: 05_WIDGETS_GUIDE.md — 위젯/컴포넌트 가이드
 
 **Files:**
+
 - Create: `docs/plans/05_WIDGETS_GUIDE.md`
 
 **Step 1: 문서 작성**
 
 아래 내용으로 파일을 생성한다. Toss UI/UX 원칙 + MoaPlace 컬러 시스템 + shadcn/ui 패턴을 적용:
 
-```markdown
+````markdown
 # 05. 위젯 가이드
 
 > MoaPlace 공통 UI 컴포넌트 카탈로그.
@@ -944,16 +982,16 @@ git commit -m "docs: add code generation guide document"
 
 MoaPlace 위젯은 다음 UX 법칙을 따른다:
 
-| 법칙 | 위젯 적용 |
-|------|-----------|
-| **피츠의 법칙** | 터치 영역 최소 44px, CTA 버튼은 하단 배치 |
-| **힉의 법칙** | 한 화면에 하나의 주요 액션, 선택지 최소화 |
-| **밀러의 법칙** | 참여자 목록 등 정보를 청크 단위로 그룹핑 |
-| **피크엔드 법칙** | 에러/완료 화면에 친근한 문구 + 부드러운 애니메이션 |
-| **도허티 임계** | 로딩 시 스켈레톤 UI 제공 (0.4초 이내 피드백) |
-| **심미적 사용성** | 둥근 모서리(rounded-lg 이상), 캐주얼한 톤 |
-| **포스텔의 법칙** | 입력은 유연하게, 요청 정보는 최소한으로 (1Thing/1Page) |
-| **폰 레스토프 효과** | PWA 설치 배너, 중심점 마커에만 강조색 사용 |
+| 법칙                 | 위젯 적용                                              |
+| -------------------- | ------------------------------------------------------ |
+| **피츠의 법칙**      | 터치 영역 최소 44px, CTA 버튼은 하단 배치              |
+| **힉의 법칙**        | 한 화면에 하나의 주요 액션, 선택지 최소화              |
+| **밀러의 법칙**      | 참여자 목록 등 정보를 청크 단위로 그룹핑               |
+| **피크엔드 법칙**    | 에러/완료 화면에 친근한 문구 + 부드러운 애니메이션     |
+| **도허티 임계**      | 로딩 시 스켈레톤 UI 제공 (0.4초 이내 피드백)           |
+| **심미적 사용성**    | 둥근 모서리(rounded-lg 이상), 캐주얼한 톤              |
+| **포스텔의 법칙**    | 입력은 유연하게, 요청 정보는 최소한으로 (1Thing/1Page) |
+| **폰 레스토프 효과** | PWA 설치 배너, 중심점 마커에만 강조색 사용             |
 
 ## 2. 컬러 시스템 요약
 
@@ -961,45 +999,45 @@ MoaPlace 위젯은 다음 UX 법칙을 따른다:
 
 ### 2.1 팔레트 (18색)
 
-| 카테고리 | 토큰 | HEX | Tailwind 클래스 |
-|----------|------|-----|-----------------|
-| **Black~White** | `white` | #FFFFFF | `bg-white` |
-| | `black` | #0A0E12 | `text-black` |
-| | `black800` | #1E293B | `text-black-800` |
-| | `black600` | #475569 | `text-black-600` |
-| | `black400` | #94A3B8 | `text-black-400` |
-| | `black300` | #CBD5E1 | `border-black-300` |
-| | `black100` | #F1F5F9 | `bg-black-100` |
-| **Primary** | `primary` | #3B82F6 | `bg-primary` |
-| | `primary700` | #1D4ED8 | `active:bg-primary-700` |
-| | `primary600` | #2563EB | `hover:bg-primary-600` |
-| | `primary100` | #DBEAFE | `bg-primary-100` |
-| **Sub** | `sub` | #C2410C | `bg-sub` |
-| | `sub600` | #9A3412 | `hover:bg-sub-600` |
-| | `sub100` | #FFEDD5 | `bg-sub-100` |
-| **Status** | `success` | #15803D | `text-success` |
-| | `error` | #DC2626 | `text-error` |
-| | `warning` | #A16207 | `text-warning` |
-| | `info` | #0369A1 | `text-info` |
+| 카테고리        | 토큰         | HEX     | Tailwind 클래스         |
+| --------------- | ------------ | ------- | ----------------------- |
+| **Black~White** | `white`      | #FFFFFF | `bg-white`              |
+|                 | `black`      | #0A0E12 | `text-black`            |
+|                 | `black800`   | #1E293B | `text-black-800`        |
+|                 | `black600`   | #475569 | `text-black-600`        |
+|                 | `black400`   | #94A3B8 | `text-black-400`        |
+|                 | `black300`   | #CBD5E1 | `border-black-300`      |
+|                 | `black100`   | #F1F5F9 | `bg-black-100`          |
+| **Primary**     | `primary`    | #3B82F6 | `bg-primary`            |
+|                 | `primary700` | #1D4ED8 | `active:bg-primary-700` |
+|                 | `primary600` | #2563EB | `hover:bg-primary-600`  |
+|                 | `primary100` | #DBEAFE | `bg-primary-100`        |
+| **Sub**         | `sub`        | #C2410C | `bg-sub`                |
+|                 | `sub600`     | #9A3412 | `hover:bg-sub-600`      |
+|                 | `sub100`     | #FFEDD5 | `bg-sub-100`            |
+| **Status**      | `success`    | #15803D | `text-success`          |
+|                 | `error`      | #DC2626 | `text-error`            |
+|                 | `warning`    | #A16207 | `text-warning`          |
+|                 | `info`       | #0369A1 | `text-info`             |
 
 ### 2.2 마커 색상
 
-| 마커 | 색상 | Tailwind |
-|------|------|----------|
-| 내 마커 | `sub` #C2410C | `bg-sub` |
-| 다른 참여자 | `primary` #3B82F6 | `bg-primary` |
-| 중심점 | `error` #DC2626 | `bg-error` |
-| 경로 라인 | `primary` #3B82F6 | `stroke-primary` |
+| 마커        | 색상              | Tailwind         |
+| ----------- | ----------------- | ---------------- |
+| 내 마커     | `sub` #C2410C     | `bg-sub`         |
+| 다른 참여자 | `primary` #3B82F6 | `bg-primary`     |
+| 중심점      | `error` #DC2626   | `bg-error`       |
+| 경로 라인   | `primary` #3B82F6 | `stroke-primary` |
 
 ## 3. 타이포그래피
 
-| 계층 | Tailwind 클래스 | 색상 | 용도 |
-|------|-----------------|------|------|
-| 헤딩 | `text-xl font-bold` | `text-black` | 페이지 타이틀, 섹션 제목 |
-| 서브헤딩 | `text-lg font-semibold` | `text-black-800` | 카드 제목, 라벨 |
-| 본문 | `text-base` | `text-black-800` | 기본 텍스트 |
-| 보조 | `text-sm` | `text-black-600` | 부가 설명, 캡션 |
-| 힌트 | `text-sm` | `text-black-400` | 플레이스홀더, 비활성 텍스트 |
+| 계층     | Tailwind 클래스         | 색상             | 용도                        |
+| -------- | ----------------------- | ---------------- | --------------------------- |
+| 헤딩     | `text-xl font-bold`     | `text-black`     | 페이지 타이틀, 섹션 제목    |
+| 서브헤딩 | `text-lg font-semibold` | `text-black-800` | 카드 제목, 라벨             |
+| 본문     | `text-base`             | `text-black-800` | 기본 텍스트                 |
+| 보조     | `text-sm`               | `text-black-600` | 부가 설명, 캡션             |
+| 힌트     | `text-sm`               | `text-black-400` | 플레이스홀더, 비활성 텍스트 |
 
 ## 4. Button
 
@@ -1007,27 +1045,27 @@ CTA 및 일반 액션 버튼. 피츠의 법칙에 따라 최소 터치 영역 44
 
 ### 4.1 Variants
 
-| Variant | 용도 | 스타일 |
-|---------|------|--------|
-| `primary` | CTA (새 모임 만들기, 여기로 확정!) | bg-primary, text-white |
-| `secondary` | 보조 액션 (취소, 닫기) | border border-black-300, text-black-800 |
-| `destructive` | 위험 액션 (삭제) | bg-error, text-white |
-| `ghost` | 미니멀 액션 (링크형 버튼) | text-primary, hover:bg-primary-100 |
+| Variant       | 용도                               | 스타일                                  |
+| ------------- | ---------------------------------- | --------------------------------------- |
+| `primary`     | CTA (새 모임 만들기, 여기로 확정!) | bg-primary, text-white                  |
+| `secondary`   | 보조 액션 (취소, 닫기)             | border border-black-300, text-black-800 |
+| `destructive` | 위험 액션 (삭제)                   | bg-error, text-white                    |
+| `ghost`       | 미니멀 액션 (링크형 버튼)          | text-primary, hover:bg-primary-100      |
 
 ### 4.2 Sizes
 
-| Size | 클래스 | 용도 |
-|------|--------|------|
-| `sm` | `px-3 py-1.5 text-sm h-8` | 인라인 액션 |
-| `md` | `px-4 py-2 text-base h-10` | 기본 |
-| `lg` | `px-6 py-3 text-lg h-12` | CTA (풀너비) |
+| Size | 클래스                     | 용도         |
+| ---- | -------------------------- | ------------ |
+| `sm` | `px-3 py-1.5 text-sm h-8`  | 인라인 액션  |
+| `md` | `px-4 py-2 text-base h-10` | 기본         |
+| `lg` | `px-6 py-3 text-lg h-12`   | CTA (풀너비) |
 
 ### 4.3 코드
 
 ```tsx
 interface ButtonProps {
-  variant?: 'primary' | 'secondary' | 'destructive' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "secondary" | "destructive" | "ghost";
+  size?: "sm" | "md" | "lg";
   className?: string;
   children: React.ReactNode;
   onClick?: () => void;
@@ -1036,23 +1074,24 @@ interface ButtonProps {
 }
 
 const buttonStyles = {
-  base: 'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 disabled:cursor-not-allowed',
+  base: "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 disabled:cursor-not-allowed",
   variant: {
-    primary: 'bg-primary hover:bg-primary-600 active:bg-primary-700 text-white',
-    secondary: 'border border-black-300 bg-white hover:bg-black-100 text-black-800',
-    destructive: 'bg-error hover:bg-red-700 text-white',
-    ghost: 'text-primary hover:bg-primary-100',
+    primary: "bg-primary hover:bg-primary-600 active:bg-primary-700 text-white",
+    secondary:
+      "border border-black-300 bg-white hover:bg-black-100 text-black-800",
+    destructive: "bg-error hover:bg-red-700 text-white",
+    ghost: "text-primary hover:bg-primary-100",
   },
   size: {
-    sm: 'px-3 py-1.5 text-sm h-8',
-    md: 'px-4 py-2 text-base h-10',
-    lg: 'px-6 py-3 text-lg h-12',
+    sm: "px-3 py-1.5 text-sm h-8",
+    md: "px-4 py-2 text-base h-10",
+    lg: "px-6 py-3 text-lg h-12",
   },
 };
 
 const Button = ({
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   className,
   children,
   onClick,
@@ -1065,7 +1104,7 @@ const Button = ({
         buttonStyles.base,
         buttonStyles.variant[variant],
         buttonStyles.size[size],
-        fullWidth && 'w-full',
+        fullWidth && "w-full",
         className,
       )}
       onClick={onClick}
@@ -1078,6 +1117,7 @@ const Button = ({
 
 export default Button;
 ```
+````
 
 ## 5. Input
 
@@ -1087,7 +1127,7 @@ export default Button;
 
 ```tsx
 interface InputProps {
-  type?: 'text' | 'search';
+  type?: "text" | "search";
   placeholder?: string;
   value: string;
   onChange: (value: string) => void;
@@ -1096,7 +1136,7 @@ interface InputProps {
 }
 
 const Input = ({
-  type = 'text',
+  type = "text",
   placeholder,
   value,
   onChange,
@@ -1111,11 +1151,11 @@ const Input = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className={cn(
-          'w-full px-4 py-3 rounded-lg border text-black-800 text-base',
-          'placeholder:text-black-400',
-          'focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
-          'transition-colors',
-          error ? 'border-error' : 'border-black-300',
+          "w-full px-4 py-3 rounded-lg border text-black-800 text-base",
+          "placeholder:text-black-400",
+          "focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent",
+          "transition-colors",
+          error ? "border-error" : "border-black-300",
           className,
         )}
       />
@@ -1140,34 +1180,34 @@ export default Input;
 
 ### 6.1 Variants
 
-| Variant | 아이콘 | 배경 | 텍스트 | 예시 |
-|---------|--------|------|--------|------|
-| `success` | ✅ | bg-success/10 | text-success | "위치가 등록되었어요!" |
-| `error` | ❌ | bg-error/10 | text-error | "위치를 가져올 수 없었어요" |
-| `info` | ℹ️ | bg-info/10 | text-info | "링크가 복사되었어요!" |
-| `warning` | ⚠️ | bg-warning/10 | text-warning | "모임이 곧 만료돼요" |
+| Variant   | 아이콘 | 배경          | 텍스트       | 예시                        |
+| --------- | ------ | ------------- | ------------ | --------------------------- |
+| `success` | ✅     | bg-success/10 | text-success | "위치가 등록되었어요!"      |
+| `error`   | ❌     | bg-error/10   | text-error   | "위치를 가져올 수 없었어요" |
+| `info`    | ℹ️     | bg-info/10    | text-info    | "링크가 복사되었어요!"      |
+| `warning` | ⚠️     | bg-warning/10 | text-warning | "모임이 곧 만료돼요"        |
 
 ### 6.2 코드
 
 ```tsx
 interface ToastProps {
-  variant: 'success' | 'error' | 'info' | 'warning';
+  variant: "success" | "error" | "info" | "warning";
   message: string;
   onClose: () => void;
 }
 
 const toastStyles = {
-  success: 'bg-green-50 text-success border-success/20',
-  error: 'bg-red-50 text-error border-error/20',
-  info: 'bg-blue-50 text-info border-info/20',
-  warning: 'bg-yellow-50 text-warning border-warning/20',
+  success: "bg-green-50 text-success border-success/20",
+  error: "bg-red-50 text-error border-error/20",
+  info: "bg-blue-50 text-info border-info/20",
+  warning: "bg-yellow-50 text-warning border-warning/20",
 };
 
 const toastIcons = {
-  success: '✅',
-  error: '❌',
-  info: 'ℹ️',
-  warning: '⚠️',
+  success: "✅",
+  error: "❌",
+  info: "ℹ️",
+  warning: "⚠️",
 };
 
 const Toast = ({ variant, message, onClose }: ToastProps) => {
@@ -1177,12 +1217,14 @@ const Toast = ({ variant, message, onClose }: ToastProps) => {
   }, [onClose]);
 
   return (
-    <div className={cn(
-      'fixed bottom-20 left-1/2 -translate-x-1/2 z-50',
-      'flex items-center gap-2 px-4 py-3 rounded-lg border',
-      'shadow-lg animate-slide-up',
-      toastStyles[variant],
-    )}>
+    <div
+      className={cn(
+        "fixed bottom-20 left-1/2 -translate-x-1/2 z-50",
+        "flex items-center gap-2 px-4 py-3 rounded-lg border",
+        "shadow-lg animate-slide-up",
+        toastStyles[variant],
+      )}
+    >
       <span>{toastIcons[variant]}</span>
       <span className="text-sm font-medium">{message}</span>
     </div>
@@ -1220,9 +1262,9 @@ const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
       {/* 모달 콘텐츠 */}
       <div
         className={cn(
-          'relative z-10 w-[calc(100%-32px)] max-w-sm',
-          'bg-white rounded-2xl p-6',
-          'animate-scale-up',
+          "relative z-10 w-[calc(100%-32px)] max-w-sm",
+          "bg-white rounded-2xl p-6",
+          "animate-scale-up",
         )}
         onClick={(e) => e.stopPropagation()}
       >
@@ -1239,7 +1281,11 @@ export default Modal;
 ### 7.2 사용 예시 — 닉네임 입력 모달
 
 ```tsx
-<Modal isOpen={isNicknameModalOpen} onClose={closeModal} title="이름을 입력해주세요">
+<Modal
+  isOpen={isNicknameModalOpen}
+  onClose={closeModal}
+  title="이름을 입력해주세요"
+>
   <Input
     placeholder="이름 입력 (예: 홍길동)"
     value={nickname}
@@ -1277,10 +1323,10 @@ const BottomSheet = ({ isOpen, onClose, children }: BottomSheetProps) => {
       <div className="absolute inset-0 bg-black/30" />
       <div
         className={cn(
-          'absolute bottom-0 left-0 right-0',
-          'bg-white rounded-t-2xl p-6 pb-safe',
-          'max-h-[70vh] overflow-y-auto',
-          'animate-slide-up',
+          "absolute bottom-0 left-0 right-0",
+          "bg-white rounded-t-2xl p-6 pb-safe",
+          "max-h-[70vh] overflow-y-auto",
+          "animate-slide-up",
         )}
         onClick={(e) => e.stopPropagation()}
       >
@@ -1302,7 +1348,7 @@ PWA 설치 유도. 폰 레스토프 효과로 시각적 강조 + Suggest Over Fo
 ### 9.1 코드
 
 ```tsx
-import usePWA from '@/hooks/usePWA';
+import usePWA from "@/hooks/usePWA";
 
 const PWAInstallBanner = () => {
   const { canInstall, install, dismiss } = usePWA();
@@ -1310,11 +1356,13 @@ const PWAInstallBanner = () => {
   if (!canInstall) return null;
 
   return (
-    <div className={cn(
-      'flex items-center justify-between gap-3',
-      'px-4 py-3 mx-4 rounded-lg',
-      'bg-primary-100 border border-primary/20',
-    )}>
+    <div
+      className={cn(
+        "flex items-center justify-between gap-3",
+        "px-4 py-3 mx-4 rounded-lg",
+        "bg-primary-100 border border-primary/20",
+      )}
+    >
       <span className="text-sm text-black-800">
         홈 화면에 추가하면 더 빠르게 쓸 수 있어요
       </span>
@@ -1340,13 +1388,25 @@ export default PWAInstallBanner;
 ```css
 /* src/styles/globals.css */
 @keyframes slide-up {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes scale-up {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .animate-slide-up {
@@ -1370,20 +1430,22 @@ export default PWAInstallBanner;
 - [ ] 하드코딩 색상 없이 컬러 토큰을 사용하는가?
 - [ ] 마이크로카피가 비격식체(해요체)인가?
 - [ ] 강요형 표현 없이 권유형인가? (Suggest Over Force)
-```
+
+````
 
 **Step 2: 커밋**
 
 ```bash
 git add docs/plans/05_WIDGETS_GUIDE.md
 git commit -m "docs: add widgets guide document"
-```
+````
 
 ---
 
 ### Task 6: 00_QUICK_REFERENCE.md — 퀵 레퍼런스 (마지막)
 
 **Files:**
+
 - Create: `docs/plans/00_QUICK_REFERENCE.md`
 
 **Step 1: 문서 작성**
@@ -1401,34 +1463,35 @@ git commit -m "docs: add widgets guide document"
 
 > 상세: [01_ARCHITECTURE.md](./01_ARCHITECTURE.md)
 
-| 구분 | 기술 |
-|------|------|
-| 빌드 | Vite |
-| 프레임워크 | React 18 + TypeScript (strict) |
-| 라우팅 | React Router v6 |
-| 스타일링 | Tailwind CSS + MoaPlace 컬러 시스템 (18색) |
-| 상태 관리 | Zustand (roomStore, uiStore) |
-| 지도 | @vis.gl/react-google-maps |
-| 3D | Three.js + @react-three/fiber + drei |
-| HTTP | Axios (3초 Polling) |
-| PWA | vite-plugin-pwa + Workbox |
-| UI 패턴 | shadcn/ui 스타일 |
+| 구분       | 기술                                       |
+| ---------- | ------------------------------------------ |
+| 빌드       | Vite                                       |
+| 프레임워크 | React 18 + TypeScript (strict)             |
+| 라우팅     | React Router v6                            |
+| 스타일링   | Tailwind CSS + MoaPlace 컬러 시스템 (18색) |
+| 상태 관리  | Zustand (roomStore, uiStore)               |
+| 지도       | @vis.gl/react-google-maps                  |
+| 3D         | Three.js + @react-three/fiber + drei       |
+| HTTP       | Axios (3초 Polling)                        |
+| PWA        | vite-plugin-pwa + Workbox                  |
+| UI 패턴    | shadcn/ui 스타일                           |
 
 ## 폴더 구조
 
 > 상세: [02_FOLDER_STRUCTURE.md](./02_FOLDER_STRUCTURE.md)
+```
 
-```
 src/
-├── pages/          # 라우트 페이지 (HomePage, RoomPage)
-├── components/     # UI 컴포넌트 (Map/, Three/, Panel/, Common/, Home/)
-├── hooks/          # 커스텀 훅 (useMap, useRoom, useGeolocation, usePWA, useThreeView)
-├── lib/            # 순수 유틸 (api, centroid, tsp, haversine, clipboard, utils)
-├── store/          # Zustand 스토어 (roomStore, uiStore)
-├── constants/      # 상수 (colors)
-├── types/          # TypeScript 타입
-└── styles/         # Tailwind 전역
-```
+├── pages/ # 라우트 페이지 (HomePage, RoomPage)
+├── components/ # UI 컴포넌트 (Map/, Three/, Panel/, Common/, Home/)
+├── hooks/ # 커스텀 훅 (useMap, useRoom, useGeolocation, usePWA, useThreeView)
+├── lib/ # 순수 유틸 (api, centroid, tsp, haversine, clipboard, utils)
+├── store/ # Zustand 스토어 (roomStore, uiStore)
+├── constants/ # 상수 (colors)
+├── types/ # TypeScript 타입
+└── styles/ # Tailwind 전역
+
+````
 
 ### 파일 네이밍
 
@@ -1478,7 +1541,7 @@ interface ButtonProps { variant?: 'primary' | 'secondary'; ... }
 const buttonStyles = { variant: { primary: '...', secondary: '...' } };
 const Button = ({ variant = 'primary', ...props }: ButtonProps) => { ... };
 export default Button;
-```
+````
 
 ### 스토어 패턴
 
@@ -1501,14 +1564,14 @@ export default useXxx;
 
 > 상세: [05_WIDGETS_GUIDE.md](./05_WIDGETS_GUIDE.md)
 
-| 위젯 | 위치 | 용도 | 핵심 UX 법칙 |
-|------|------|------|-------------|
-| **Button** | Common/ | CTA, 보조 액션 | 피츠의 법칙 (44px+) |
-| **Input** | Common/ | 텍스트/검색 입력 | 포스텔의 법칙 (유연한 입력) |
-| **Toast** | Common/ | 완료/에러 피드백 | 피크엔드 법칙 (감정 공감) |
-| **Modal** | Common/ | 닉네임 입력, 확인 | 1Thing/1Page |
-| **BottomSheet** | Common/ | 위치 확정, 결과 패널 | 힉의 법칙 (그룹핑) |
-| **PWAInstallBanner** | Common/ | PWA 설치 유도 | Suggest Over Force |
+| 위젯                 | 위치    | 용도                 | 핵심 UX 법칙                |
+| -------------------- | ------- | -------------------- | --------------------------- |
+| **Button**           | Common/ | CTA, 보조 액션       | 피츠의 법칙 (44px+)         |
+| **Input**            | Common/ | 텍스트/검색 입력     | 포스텔의 법칙 (유연한 입력) |
+| **Toast**            | Common/ | 완료/에러 피드백     | 피크엔드 법칙 (감정 공감)   |
+| **Modal**            | Common/ | 닉네임 입력, 확인    | 1Thing/1Page                |
+| **BottomSheet**      | Common/ | 위치 확정, 결과 패널 | 힉의 법칙 (그룹핑)          |
+| **PWAInstallBanner** | Common/ | PWA 설치 유도        | Suggest Over Force          |
 
 ### 컬러 토큰 빠른 참조
 
@@ -1523,21 +1586,22 @@ CTA: bg-primary hover:bg-primary-600 active:bg-primary-700
 
 ## 문서 목록
 
-| # | 문서 | 설명 |
-|---|------|------|
-| 01 | [ARCHITECTURE](./01_ARCHITECTURE.md) | 시스템 구조, 기술스택, 데이터 플로우, API |
-| 02 | [FOLDER_STRUCTURE](./02_FOLDER_STRUCTURE.md) | 디렉토리 역할, 파일 네이밍, import 순서 |
-| 03 | [CODE_CONVENTIONS](./03_CODE_CONVENTIONS.md) | TS/React/Zustand/Tailwind/API/UX 라이팅 규칙 |
-| 04 | [CODE_GENERATION_GUIDE](./04_CODE_GENERATION_GUIDE.md) | 컴포넌트/페이지/훅/스토어/유틸 생성 템플릿 |
-| 05 | [WIDGETS_GUIDE](./05_WIDGETS_GUIDE.md) | UI 컴포넌트 카탈로그 (Toss UX + 컬러 + shadcn/ui) |
-```
+| #   | 문서                                                   | 설명                                              |
+| --- | ------------------------------------------------------ | ------------------------------------------------- |
+| 01  | [ARCHITECTURE](./01_ARCHITECTURE.md)                   | 시스템 구조, 기술스택, 데이터 플로우, API         |
+| 02  | [FOLDER_STRUCTURE](./02_FOLDER_STRUCTURE.md)           | 디렉토리 역할, 파일 네이밍, import 순서           |
+| 03  | [CODE_CONVENTIONS](./03_CODE_CONVENTIONS.md)           | TS/React/Zustand/Tailwind/API/UX 라이팅 규칙      |
+| 04  | [CODE_GENERATION_GUIDE](./04_CODE_GENERATION_GUIDE.md) | 컴포넌트/페이지/훅/스토어/유틸 생성 템플릿        |
+| 05  | [WIDGETS_GUIDE](./05_WIDGETS_GUIDE.md)                 | UI 컴포넌트 카탈로그 (Toss UX + 컬러 + shadcn/ui) |
+
+````
 
 **Step 2: 커밋**
 
 ```bash
 git add docs/plans/00_QUICK_REFERENCE.md
 git commit -m "docs: add quick reference document"
-```
+````
 
 ---
 
@@ -1550,6 +1614,7 @@ ls -la docs/plans/0*.md
 ```
 
 Expected output:
+
 ```
 docs/plans/00_QUICK_REFERENCE.md
 docs/plans/01_ARCHITECTURE.md
